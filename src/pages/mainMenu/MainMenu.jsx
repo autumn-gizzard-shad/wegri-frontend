@@ -27,7 +27,7 @@ function MainMenu() {
                     더 보기
                 </div>
             </CommonButton>
-            <Bottom></Bottom>
+            <Bottom current="main"></Bottom>
 
         </div>
     );
