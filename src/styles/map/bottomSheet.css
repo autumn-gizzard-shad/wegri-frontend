@@ -1,0 +1,13 @@
+.contentBody{
+  margin-top: 0;
+  padding-left: 5%;
+  padding-right: 5%;
+}
+h1 {
+  text-align: left;
+  padding-left: 5%;
+}
+.contentImage {
+  border-radius: 10%;
+  width: 90%;  
+}

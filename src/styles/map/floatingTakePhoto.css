@@ -1,0 +1,17 @@
+.cameraArea {
+  width:100vw;
+  height:70vh;
+}
+
+.buttonArea {
+  width:100vw;
+  height:100px;
+  align-content:center;
+  justify-content:center;
+}
+
+.photoButton {
+  width: 70px;
+  height: 70px;
+  border-radius: 70px;
+}

@@ -1,10 +1,19 @@
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import logo from '../assets/logo.svg';
 import '../styles/App.css';
+import KaKao from './map/kakaomap';
+import FloatingTakePhoto from './map/floatingTakePhoto';
 
 function App() {
-  return (
+  return ( 
     <div className="App">
-      <header className="App-header">
+      <BrowserRouter>
+        <Routes>
+          <Route path="/map" element={<KaKao category="bicycle"></KaKao>}/>
+          <Route path="/map/photo" element={<FloatingTakePhoto></FloatingTakePhoto>}/>
+        </Routes>
+      </BrowserRouter>
+      {/* <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
           Edit <code>src/App.js</code> and save to reload.
@@ -17,7 +26,7 @@ function App() {
         >
           Learn React
         </a>
-      </header>
+      </header> */}
     </div>
   );
 }
