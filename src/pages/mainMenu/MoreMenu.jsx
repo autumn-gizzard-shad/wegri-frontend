@@ -92,7 +92,7 @@ function MoreMenu(props){
 
             }
             
-            <Bottom></Bottom>
+            <Bottom current="main"></Bottom>
         
         </div>
     )
