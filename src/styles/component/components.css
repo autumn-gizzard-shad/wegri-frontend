@@ -1,0 +1,231 @@
+.header-index{
+    display: flex;
+    position: fixed;
+    top:0%;
+    padding-top: 30px;
+    width: 100%;
+    height: 85px;
+    background-color: #6DC553;
+    border-bottom-left-radius:25px ;
+    border-bottom-right-radius: 25px;
+}
+
+.header-content{
+    display: flex;
+    font-size: 27px ;
+    width: 100%;
+    font-weight: bold;
+    color:white;
+    justify-content: center;
+    align-items: center;
+    
+}
+
+.button{
+    border-radius: 15px ;
+    box-shadow: 0px 0px 10px 0px rgb(0,0,0,0.07) ;
+    background-color: white;
+    padding-inline: 10px;
+    padding-block: 10px ;
+    display: flex;
+    justify-content: center;
+    font-size: 25px;
+    font-weight: bold;
+}
+
+.map-btn{
+    display: flex;
+    flex-direction: column;
+    padding-inline: 20px;
+    padding-block: 15px ;
+
+}
+
+.map-btn#small{
+    width: 300px;
+    height: 120px;
+}
+.map-btn#small{
+    width: 300px;
+    height: 40px;
+}
+
+.map-btn__content{
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    font-weight: bold;
+}
+
+.map-btn__title{
+    font-size: 27px;
+}
+
+.map-btn__pins{
+    color:#FFBE63;
+    font-size: 20px;
+}
+
+.map-btn__desc{
+    font-weight: normal;
+    font-size: 17px;
+    width: 200px;
+}
+.map-btn__emoji#big{
+    font-size: 75px;
+}
+.map-btn__emoji#small{
+    font-size: 30px;
+}
+
+.button-content{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.button-more{
+    font-size: 27px;
+    font-weight: bold;
+}
+
+.bottom-index{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 73px;
+    position: fixed;
+    bottom: 0%;
+    background-color: white;
+}
+
+.bottom-btn{
+    width: 33%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #CCCCCC;
+}
+.bottom-btn#current{
+    color:#6DC553;
+}
+
+.bottom-btn__img{
+    width: 30px;
+    height: 30px;
+    background-repeat: no-repeat;
+}
+.home{
+    background-image: url(../../assets/homeButton.png);
+}
+.heart{
+    background-image: url(../../assets/heartButton.png);
+}
+
+.myPage{
+    background-image: url(../../assets/myPageButton.png);
+}
+
+.home#current{
+    background-image: url(../../assets/homeButtonCurrent.png);
+}
+.heart#current{
+    background-image: url(../../assets/heartButtonCurrent.png);
+}
+
+.myPage#current{
+    background-image: url(../../assets/myPageButtonCurrent.png);
+}
+
+.plus-button{
+    width: 70px;
+    height: 70px;
+    position: fixed;
+    bottom: 10%;
+    right: 10%;
+    background-repeat: no-repeat;
+    background-position: center;
+    z-index: 3;
+}
+
+.plus-btn{
+    background-image: url("../../assets/plusButton.png") ;
+}
+.close-btn{
+    background-image: url("../../assets/closeButton.png") ;
+}
+
+.modal-background{
+    width: 100%;
+    height: 100vh;
+    position:fixed;
+    top: 0%;
+    background-color: rgba(0,0,0,0.42);
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+.modal-index{
+    width: 80vw;
+    height: 50vh;
+    background-color: white;
+    border-radius: 15px;
+    z-index: 3;
+    padding-block: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-top{
+    display: flex;
+    flex-direction: column;
+    padding-inline: 7%;
+    font-size: 20px;
+    font-weight: bold;
+    width: 87%;
+    gap: 10px;
+
+}
+.modal-title__input{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    
+}
+.modal-title__input-text{
+    width: calc(100% - 70px);
+    height: 47px;
+    border-radius: 10px; 
+    border: #CCCCCC ;
+    border-style: solid;
+
+}
+.modal-title__input-emoji{
+    background-color: #E6E6E6;
+    border-radius: 10px;
+    width: 50px;
+    height: 50px;
+
+}
+
+.modal-content{
+    display: flex;
+    flex-direction: column;
+    padding-inline: 7%;
+    font-size: 20px;
+    font-weight: bold;
+    gap: 10px;
+    width: 87%;
+    height: 40%;
+}
+.modal-content__input-text{
+    width: 100%;
+    border-radius: 10px; 
+    border: #CCCCCC ;
+    border-style: solid;
+    height: 220px;
+}
