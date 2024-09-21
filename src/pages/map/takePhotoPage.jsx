@@ -1,11 +1,17 @@
 import { useEffect, useRef, useState } from "react";
-import '../../styles/map/floatingTakePhoto.css';
-import { useNavigate } from "react-router-dom";
-function FloatingTakePhoto () {
+import '../../styles/map/takePhoto.css';
+import { useNavigate, useLocation } from "react-router-dom";
+import { dateCalc } from "../../utils/calculator";
+function TakePhotoPage () {
   const videoRef = useRef(null);
   const streamRef = useRef(null);
 
+  const location = useLocation();
   const navigate = useNavigate();
+  
+  const fromWhere = location.state.from;
+  // returnButton or floatingButton
+
   function pauseVideo () {
     videoRef.current.pause();
   }
@@ -43,7 +49,16 @@ function FloatingTakePhoto () {
   }
 
   async function fetchImage(image,coords){
+    const date = dateCalc();
+    
     console.log(coords);
+    if(fromWhere === "floatingButton"){
+      console.log("FB");
+    } else if ( fromWhere === "returnButton"){
+      console.log("RB");
+    } else {
+      console.error("what are you ????");
+    }
   }
   async function takePhoto () { 
     // 1. pause
@@ -112,4 +127,4 @@ function FloatingTakePhoto () {
 
 }
 
-export default FloatingTakePhoto;
+export default TakePhotoPage;

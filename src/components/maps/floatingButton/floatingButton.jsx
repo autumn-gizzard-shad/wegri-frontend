@@ -11,7 +11,7 @@ function FloatingButton({category}) {
   }
 
   function doImage() {
-    navigate("/map/photo");
+    navigate("/map/photo", {state: {"from" : "floatingButton"}});
   }
   
   const upOpacity = () => {

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import '../../../styles/map/rentManager.css';
+import { useNavigate } from 'react-router-dom';
 
 function RentManager({isRentOn, setIsRentOn}) {
   const [style, setStyle] = useState({ opacity: 1 });
@@ -8,11 +9,13 @@ function RentManager({isRentOn, setIsRentOn}) {
   const timeSec = useRef(0);
   const timerId = useRef(null);
   var runningTime = min + ":" + sec;
+  const navigate = useNavigate();
 
   function doReturn() {
     if(isRentOn){
       setIsRentOn(false);
     }
+    navigate("/map/photo", {state: {"from" : "returnButton"}});
   }
 
   const upOpacity = () => {

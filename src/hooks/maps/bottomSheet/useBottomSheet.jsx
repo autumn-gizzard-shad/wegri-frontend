@@ -14,7 +14,7 @@ const useBottomSheet = () => {
     
     var shouldClose = offsetTop > window.innerHeight * (0.9);
     if(isOpen){
-      shouldClose = offsetTop > window.innerHeight * (0.4);
+      shouldClose = offsetTop > window.innerHeight * (0.3);
     } 
     
 

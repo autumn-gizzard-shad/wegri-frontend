@@ -18,7 +18,7 @@ const BottomSheet = ({ children, onDragEnd, controls, headerRef }) => {
         stiffness: 400
       }}
       variants={{
-        visible: { y: "10%" },
+        visible: { y: 0 },
         hidden: { y: "70%" }
       }}
       dragConstraints={{ top: 0 }}

@@ -8,19 +8,21 @@ import RentManager from '../../components/maps/rentManager/rentManager';
 const { kakao } = window;
 
 function KaKao({category,map_id}) {
+  var geocoder;
+
   const [map, setMap] = useState(null);
 
   const PIN_WIDTH = 60;
   const PIN_HEIGHT = 69;
   const BASIC_PIN_SRC = require("../../assets/map_emoji/"+category+"_basic.png");
   const SELECTED_PIN_SRC = require("../../assets/map_emoji/"+category+"_selected.png");
-  var userInitialLoc;
   const [userLoc, setUserLoc] = useState(null);
-  const { setIsOpen, isOpen, controls,onDragEnd, headerRef } = useBottomSheet();
+  const {setIsOpen, isOpen, controls,onDragEnd, headerRef } = useBottomSheet();
   const [selectedMarkerState, setSelectedMarkerState] = useState(null);
+  const [selectedMarkerInfo, setSelectedMarkerInfo] = useState(null);
   var selectedMarker = null;
-  const [ isRentOn, setIsRentOn ] = useState(true);
-  const [ currentPosition, setCurrentPosition] = useState(null);
+  const [isRentOn, setIsRentOn ] = useState(false);
+  const [currentPosition, setCurrentPosition] = useState(null);
   const [userMarker, setUserMarker] = useState(null);
   const [watchId, setWatchId] = useState(null);
   const [markerList, setMarkerList] = useState([]);
@@ -44,11 +46,10 @@ function KaKao({category,map_id}) {
   function addMarker(map,position){
     const basicImage = createMarkerImage(BASIC_PIN_SRC, PIN_WIDTH, PIN_HEIGHT);
     const selectedImage = createMarkerImage(SELECTED_PIN_SRC, PIN_WIDTH*1.3, PIN_HEIGHT*1.3);
-
+    const latlng = new kakao.maps.LatLng(position.lat, position.lng);
     const marker = new kakao.maps.Marker({
         map : map,
-        position : position.latlng,
-        title : position.title,
+        position : latlng,
         image : basicImage
     });
 
@@ -63,6 +64,15 @@ function KaKao({category,map_id}) {
         setIsOpen(true);
 
       }
+
+      // bottomSheetContent에서 사용할 정보들
+      setSelectedMarkerInfo({
+        lat: position.lat,
+        lng: position.lng,
+        date: position.date,
+        addr:position.addr,
+        image:position.image
+      });
       setSelectedMarkerState(marker);
       selectedMarker = marker;
 
@@ -100,10 +110,59 @@ function KaKao({category,map_id}) {
       setWatchId(null);
     }
   }
+
+  async function fetchMarkerList(map) {
+    const list_from_BE = [
+      {
+        pin_date : "2024-09-15",
+        pin_latitude : 35.870183,
+        pin_longitude : 128.606315,
+        pin_image : "base64---"
+      },
+      {
+        pin_date : "2024-09-16",
+        pin_latitude :35.883577,
+        pin_longitude : 128.594503,
+        pin_image : "base64---"
+      },
+      {
+        pin_date : "2024-09-14",
+        pin_latitude : 35.881630,
+        pin_longitude : 128.588109,
+        pin_image : "base64---"
+      },
+      {
+        pin_date : "2024-07-14",
+        pin_latitude : 35.886515,
+        pin_longitude : 128.601198,
+        pin_image : "base64---"
+      }
+    ];
+
+    const positions = [];
+    var addressString = "기본 주소예요";
+    for(let i = 0 ; i < list_from_BE.length; i++ ){
+      const item = list_from_BE[i];
+      geocoder.coord2Address(item.pin_longitude, item.pin_latitude, (result, status)=> {
+        if (status === kakao.maps.services.Status.OK) {
+          addressString = result[0].address.address_name;
+          const position = {
+            date:item.pin_date,
+            lat:item.pin_latitude,
+            lng:item.pin_longitude,
+            addr:addressString,
+            image:item.pin_image
+          };
+          
+          addMarker(map,position);  
+        }
+      });
+    }
+  }
   useEffect(() => {
     async function getCoords () {
       keepGettingCurrentLoc();
-
+      var userInitialLoc;
       if(navigator.geolocation){
         const pos = await new Promise((resolve, reject) => {
           navigator.geolocation.getCurrentPosition(resolve, reject);
@@ -122,41 +181,29 @@ function KaKao({category,map_id}) {
   },[]);
 
   useEffect(()=>{
-    if(userLoc){
-      // map 생성
-      const container = document.getElementById('map');
-      const options = {
-          center : userLoc,
-          level : 3 // 지도의 확대 레벨
-      };
+    async function mapEffectFunction() {
+      if(userLoc){
+        // map 생성
+        const container = document.getElementById('map');
+        const options = {
+            center : userLoc,
+            level : 3 // 지도의 확대 레벨
+        };
+  
+        const map =new kakao.maps.Map(container,options);
+        setMap(map);
+        setMarkerList([]);
 
-      const map =new kakao.maps.Map(container,options);
-      setMap(map);
-      // map = new kakao.maps.Map(container,options);    
-      const positions = [
-      {
-          title: '안양역', 
-          latlng: new kakao.maps.LatLng(37.402707, 126.922044)
-      },
-      {
-          title: '안양역 주위 1', 
-          latlng: new kakao.maps.LatLng(37.400707, 126.920044)
-      },
-      {
-          title: '안양역 주위 2', 
-          latlng: new kakao.maps.LatLng(37.403007, 126.925044)
-      },
-      {
-          title: '안양역 주위 3',
-          latlng: new kakao.maps.LatLng(37.405707, 126.925044)
+        // map = new kakao.maps.Map(container,options);  
+        geocoder  = new kakao.maps.services.Geocoder(); 
+        await fetchMarkerList(map);
+        // const positions = await fetchMarkerList();
+        // console.log(positions);
+        console.log(11);
       }
-      ]; 
-      
-      // 주제에 맞는 pin ( == marker ) 생성
-      for(var i = 0; i < positions.length; i++){
-        addMarker(map,positions[i]);  
-      }
+  
     }
+    mapEffectFunction();
   },[userLoc]);
 
   useEffect(() => {
@@ -178,12 +225,11 @@ function KaKao({category,map_id}) {
           userPolyPath.setMap(null);
         }
 
-        console.log(userPathList);
 
         const polyline = new kakao.maps.Polyline({
           path: userPathList,
           strokeWeight: 5, 
-          strokeColor: '#FFAE00', // 선의 색깔입니다
+          strokeColor: '#FFAE00', 
           strokeOpacity: 0.7, 
           strokeStyle: 'solid' 
         });
@@ -218,6 +264,7 @@ function KaKao({category,map_id}) {
         markerList.forEach((marker)=>marker.setMap(null));
       } else {
         markerList.forEach((marker)=>marker.setMap(map));
+        userPolyPath.setMap(null);
         setUserPolyPath(null);
         setUserPathList([]);
       }  
@@ -251,6 +298,8 @@ function KaKao({category,map_id}) {
           category = {category}
           selectedMarker = {selectedMarkerState}
           setSelectedMarkerState = {setSelectedMarkerState}
+          selectedMarkerInfo = {selectedMarkerInfo}
+          currentPosition = {currentPosition}
           isOpen = {isOpen}
           setIsOpen = {setIsOpen}
           isRentOn = {isRentOn}

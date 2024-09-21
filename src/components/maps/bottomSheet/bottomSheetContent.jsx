@@ -1,20 +1,34 @@
 import base64TempImage from "./temp";
 import '../../../styles/map/bottomSheet.css';
 import { useEffect, useState } from "react";
+import { distanceMeterCalc } from "../../../utils/calculator";
+import Toast from "../../../utils/toast";
 
-function BottomSheetContent({category,
-  selectedMarker, 
+const { kakao } = window;
+
+function BottomSheetContent({
+  category,
+  selectedMarker,
   setSelectedMarkerState,
+  selectedMarkerInfo,
   isOpen, 
   setIsOpen, 
   isRentOn,
-  setIsRentOn
+  setIsRentOn,
+  currentPosition
   }) {
   const [isBicycle, setIsBicycle] = useState(false);
   const [isEmpty , setIsEmpty] =  useState(true);
   const [style, setStyle] = useState({ opacity: 1 });
+  const [toast, setToast] = useState(false);
+
 
   async function doRent() {
+    const distance = distanceMeterCalc(selectedMarkerInfo.lat, selectedMarkerInfo.lng, currentPosition.lat,currentPosition.lng);
+    if(distance >= 5){
+      setToast(true);
+      return;
+    }
     if(!isRentOn){
       setIsRentOn(true);
     }
@@ -24,7 +38,6 @@ function BottomSheetContent({category,
       setIsOpen(false);
     }
     //
-
   }
 
 
@@ -53,6 +66,8 @@ function BottomSheetContent({category,
 
     return (
       <div className="content-body">
+        {toast && <Toast setToast={setToast} text="자전거에 가까이 가셔야 합니다."></Toast>}
+
         {isEmpty
         ?<div>
           <h2>환영합니다 !</h2>
@@ -61,8 +76,9 @@ function BottomSheetContent({category,
         </div>
       
         :<div>
-          <h2 className="content-date">{pinDate}</h2>
-          <img className="content-image" src= {imageSrcBase64}/>        
+          <h2 className="content-date">{selectedMarkerInfo?.date}</h2>
+          <p>{selectedMarkerInfo?.addr}</p>
+          {/* <img className="content-image" src= {imageSrcBase64}/>         */}
         </div>
           }
         {!isEmpty && isBicycle
