@@ -2,15 +2,29 @@ import base64TempImage from "./temp";
 import '../../../styles/map/bottomSheet.css';
 import { useEffect, useState } from "react";
 
-function BottomSheetContent({category, selectedMarker}) {
+function BottomSheetContent({category, selectedMarker, currentPosition}) {
   const [isBicycle, setIsBicycle] = useState(false);
   const [isEmpty , setIsEmpty] =  useState(true);
+  const [style, setStyle] = useState({ opacity: 1 });
+
+  async function doRent() {
+    
+  }
+
+
+  const upOpacity = () => {
+    setStyle({opacity:1});
+  }
+  const downOpacity = () => {
+    setStyle({opacity:0.5});
+  }
+
 
   useEffect(() => {
-    if(category == "bicycle"){
+    if(category === "bicycle"){
       setIsBicycle(true);
     }
-    if(selectedMarker==null){
+    if(selectedMarker===null){
       setIsEmpty(true);
     } else {
       setIsEmpty(false);
@@ -24,10 +38,13 @@ function BottomSheetContent({category, selectedMarker}) {
 
     return (
       <div className="content-body">
-        {isEmpty
+        {isEmpty && currentPosition
         ?<div>
+          <p>{currentPosition.lat}</p>
+          <p>{currentPosition.lng}</p>
           <h2>환영합니다 !</h2>
-          <p>핀을 눌러 자세한 내용을 확인하세요.</p>
+          <p>핀을 눌러 내용을 확인하시거나</p>
+          <p>우측 상단 버튼을 눌러 새로운 핀을 등록하세요.</p>
         </div>
       
         :<div>
@@ -37,7 +54,13 @@ function BottomSheetContent({category, selectedMarker}) {
           }
         {!isEmpty && isBicycle
         ?<div>
-          <button className="rent-button">
+          <button 
+            className="rent-button"
+            style={style}
+            onTouchStart={downOpacity}
+            onTouchEnd={upOpacity}
+            onClick={doRent}
+          >
             <p>대여하기</p>
           </button>
           <div className="categorical-text">

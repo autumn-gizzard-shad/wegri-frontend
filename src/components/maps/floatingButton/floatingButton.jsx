@@ -5,10 +5,11 @@ import { useNavigate } from 'react-router-dom';
 function FloatingButton({category}) {
   const [style, setStyle] = useState({ opacity: 1 });
   const navigate = useNavigate();
-  var featuredImageName;
-  if(category == "bicycle"){
-    
+  var featuredImageName = "photo";
+  if(category === "bicycle"){
+    featuredImageName = "register";
   }
+
   function doImage() {
     navigate("/map/photo");
   }
@@ -21,10 +22,11 @@ function FloatingButton({category}) {
   }
 
   
-  const FABImage = require('../../../assets/map/map_photo_button.png');
+  const FABImage = require('../../../assets/map/map_'+featuredImageName+'_button.png');
 
   return (
-    <img className='floating-button' style={style}
+    <img className='floating-button' 
+      style={style}
       src={FABImage}
       onTouchStart={downOpacity}
       onTouchEnd={upOpacity}

@@ -7,6 +7,8 @@ import FloatingButton from '../../components/maps/floatingButton/floatingButton'
 const { kakao } = window;
 
 function KaKao({category,map_id}) {
+  const [map, setMap] = useState(null);
+
   const PIN_WIDTH = 60;
   const PIN_HEIGHT = 69;
   const BASIC_PIN_SRC = require("../../assets/map_emoji/"+category+"_basic.png");
@@ -14,9 +16,12 @@ function KaKao({category,map_id}) {
   var userInitialLoc;
   const [userLoc, setUserLoc] = useState(null);
   const { setIsOpen, isOpen, controls,onDragEnd, headerRef } = useBottomSheet();
-
   const [selectedMarkerState, setSelectedMarkerState] = useState(null);
   var selectedMarker = null;
+  const [ isRentOn, setIsRentOn ] = useState(false);
+  const [ currentPosition, setCurrentPosition] = useState(null);
+  const [userMarker, setUserMarker] = useState(null);
+  const [watchId, setWatchId] = useState(null);
 
   function createMarkerImage(imageSrc, width, height){
     const markerSize = new kakao.maps.Size(width, height);
@@ -32,7 +37,7 @@ function KaKao({category,map_id}) {
     return markerImage;
   }
 
-  function addMarker(map,position){
+  function addMarker(position){
     const basicImage = createMarkerImage(BASIC_PIN_SRC, PIN_WIDTH, PIN_HEIGHT);
     const selectedImage = createMarkerImage(SELECTED_PIN_SRC, PIN_WIDTH*1.3, PIN_HEIGHT*1.3);
 
@@ -54,16 +59,45 @@ function KaKao({category,map_id}) {
         setIsOpen(true);
 
       }
-
       setSelectedMarkerState(marker);
       selectedMarker = marker;
 
     });
 
-  }
+  } 
 
+  function keepGettingCurrentLoc() {
+    if(navigator.geolocation){
+      const watchId = navigator.geolocation.watchPosition(
+        (position) => {
+          setCurrentPosition({
+            lat : position.coords.latitude,
+            lng : position.coords.longitude,
+          });
+        },
+        (err) => {
+          console.error("Error while wathing position:", err);
+        },
+        {
+          enableHighAccuracy : false,
+          timeout: 10000,
+          maximumAge : 3000,
+        }
+      );
+      setWatchId(watchId);
+
+    }
+  }
+  function stopGeetingCurrentLoc(){
+    if(watchId){
+      navigator.geolocation.clearWatch(watchId);
+      setWatchId(null);
+    }
+  }
   useEffect(() => {
     async function getCoords () {
+      keepGettingCurrentLoc();
+
       if(navigator.geolocation){
         const pos = await new Promise((resolve, reject) => {
           navigator.geolocation.getCurrentPosition(resolve, reject);
@@ -78,18 +112,20 @@ function KaKao({category,map_id}) {
 
     getCoords();
 
+    return stopGeetingCurrentLoc();
   },[]);
 
   useEffect(()=>{
-    if(userLoc != null){
+    if(userLoc){
       // map 생성
       const container = document.getElementById('map');
       const options = {
           center : userLoc,
           level : 3 // 지도의 확대 레벨
       };
-      const map = new kakao.maps.Map(container,options);    
-
+      const map =new kakao.maps.Map(container,options);
+      setMap(map);
+      // map = new kakao.maps.Map(container,options);    
       const positions = [
       {
           title: '안양역', 
@@ -109,13 +145,34 @@ function KaKao({category,map_id}) {
       }
       ]; 
       
-
+      // 주제에 맞는 pin ( == marker ) 생성
       for(var i = 0; i < positions.length; i++){
-        addMarker(map,positions[i]);  
+        addMarker(positions[i]);  
       }
     }
   },[userLoc]);
 
+  useEffect(() => {
+    if(map){
+      if(userMarker) userMarker.setMap(null);
+      console.log(userMarker);
+      // 사용자의 현재 위치 pin
+      const userImage = createMarkerImage(
+        require("../../assets/map/user_location_circle.png"),
+        25,
+        25
+      );
+      const userLocation =  new kakao.maps.LatLng(currentPosition.lat, currentPosition.lng);
+
+      const marker = new kakao.maps.Marker({
+        map : map,
+        position : userLocation,
+        image : userImage
+      });
+
+      setUserMarker(marker);
+    }
+  },[currentPosition]);
 
   return (
     <div id = "map" style = {{
@@ -124,7 +181,9 @@ function KaKao({category,map_id}) {
         overflowY:"none",
     }}>
 
-      <FloatingButton></FloatingButton>
+      <FloatingButton
+        category={category}
+      ></FloatingButton>
 
       <BottomSheet
         onDragEnd = {onDragEnd}
@@ -134,6 +193,8 @@ function KaKao({category,map_id}) {
         <BottomSheetContent
           category = {category}
           selectedMarker = {selectedMarkerState}
+
+          currentPosition={currentPosition}
         ></BottomSheetContent>
       </BottomSheet>
     </div>
