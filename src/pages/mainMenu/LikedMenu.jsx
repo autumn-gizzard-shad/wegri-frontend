@@ -19,7 +19,7 @@ function LikedMenu(props){
             <MapButton size="small"></MapButton>
             <MapButton size="small"></MapButton> 
             <MapButton size="small"></MapButton>
-            <Bottom></Bottom>
+            <Bottom current="liked"></Bottom>
         </div>
     )
 
