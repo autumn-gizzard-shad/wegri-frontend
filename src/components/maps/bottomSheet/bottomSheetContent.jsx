@@ -45,7 +45,6 @@ function BottomSheetContent({category,
     } else {
       setIsEmpty(false);
     }
-    console.log(isBicycle);
   },[selectedMarker]);
 
   const imageSrcBase64 = base64TempImage;

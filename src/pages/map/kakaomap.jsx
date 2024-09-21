@@ -24,6 +24,8 @@ function KaKao({category,map_id}) {
   const [userMarker, setUserMarker] = useState(null);
   const [watchId, setWatchId] = useState(null);
   const [markerList, setMarkerList] = useState([]);
+  const [userPathList, setUserPathList] = useState([]);
+  const [userPolyPath, setUserPolyPath] = useState(null);
 
   function createMarkerImage(imageSrc, width, height){
     const markerSize = new kakao.maps.Size(width, height);
@@ -83,9 +85,9 @@ function KaKao({category,map_id}) {
           console.error("Error while wathing position:", err);
         },
         {
-          enableHighAccuracy : false,
+          enableHighAccuracy : true,
           timeout: 10000,
-          maximumAge : 3000,
+          maximumAge : 0,
         }
       );
       setWatchId(watchId);
@@ -159,8 +161,40 @@ function KaKao({category,map_id}) {
 
   useEffect(() => {
     if(map){
-      if(userMarker) userMarker.setMap(null);
-      // 사용자의 현재 위치 pin
+      if(userMarker) {
+        userMarker.setMap(null);
+      }
+
+      // 유저 이동경로 기록하기
+      if(isRentOn){
+        console.log(currentPosition.lat);
+        console.log(currentPosition.lng);
+        const tempArr = userPathList;
+        tempArr.push(
+          new kakao.maps.LatLng(currentPosition.lat, currentPosition.lng)
+        );
+        
+        if(userPolyPath){
+          userPolyPath.setMap(null);
+        }
+
+        console.log(userPathList);
+
+        const polyline = new kakao.maps.Polyline({
+          path: userPathList,
+          strokeWeight: 5, 
+          strokeColor: '#FFAE00', // 선의 색깔입니다
+          strokeOpacity: 0.7, 
+          strokeStyle: 'solid' 
+        });
+        
+        polyline.setMap(map);
+
+        setUserPolyPath(polyline);
+        
+      }
+
+        // 사용자의 현재 위치 pin
       const userImage = createMarkerImage(
         require("../../assets/map/user_location_circle.png"),
         25,
@@ -184,6 +218,8 @@ function KaKao({category,map_id}) {
         markerList.forEach((marker)=>marker.setMap(null));
       } else {
         markerList.forEach((marker)=>marker.setMap(map));
+        setUserPolyPath(null);
+        setUserPathList([]);
       }  
     }
   },[isRentOn]);
