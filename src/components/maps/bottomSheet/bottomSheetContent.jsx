@@ -15,30 +15,35 @@ function BottomSheetContent({category, selectedMarker}) {
     } else {
       setIsEmpty(false);
     }
-    console.log(selectedMarker);
+    console.log(isBicycle);
   },[selectedMarker]);
 
   const imageSrcBase64 = base64TempImage;
   const pinDate = "2024-09-16";
+  const provider = "민국";
 
     return (
-      <div className="contentBody">
+      <div className="content-body">
         {isEmpty
         ?<div>
-          <h1>환영합니다 !</h1>
+          <h2>환영합니다 !</h2>
           <p>핀을 눌러 자세한 내용을 확인하세요.</p>
         </div>
       
         :<div>
-          <h1 className="contentDate">{pinDate}</h1>
-          <img className="contentImage" src= {imageSrcBase64}/>        
+          <h2 className="content-date">{pinDate}</h2>
+          <img className="content-image" src= {imageSrcBase64}/>        
         </div>
           }
         {!isEmpty && isBicycle
         ?<div>
-          
-          <p>hkkhak</p>
-          <h1>gkaewofjwei</h1>
+          <button className="rent-button">
+            <p>대여하기</p>
+          </button>
+          <div className="categorical-text">
+            <p className="row-head">제공자</p>
+            <p className="row-content">{provider}</p>
+          </div>
         </div>
         : <div></div>
         }

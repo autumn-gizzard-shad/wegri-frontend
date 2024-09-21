@@ -1,13 +1,48 @@
-.contentBody{
+.content-body{
   margin-top: 0;
   padding-left: 5%;
   padding-right: 5%;
 }
-h1 {
+h2{
   text-align: left;
   padding-left: 5%;
 }
-.contentImage {
+.content-image {
   border-radius: 10%;
   width: 90%;  
+}
+
+.rent-button {
+  width : 45%;
+  height: 46px;
+  border-radius: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
+  background-color: #6DC553;
+  color: white;
+  margin-left : 45%;
+  margin-top : 5px;
+}
+
+.categorical-text {
+  flex-direction: row;
+  text-align: left;  
+  padding-left: 5%;
+  justify-content: center;
+}
+
+.row-head {
+  font-weight: bold;
+  color : black;
+  display: inline-block;
+  font-size: 22px;
+}
+
+.row-content {
+  margin-left: 10px;
+  display: inline-block;
+  color : #545454;
+  font-size: 20px;
 }

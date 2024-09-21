@@ -91,7 +91,7 @@ function FloatingTakePhoto () {
     <div>
       <div>
         <video
-          className ="cameraArea"
+          className ="camera-area"
           ref={videoRef}
           autoPlay
           muted
@@ -99,10 +99,10 @@ function FloatingTakePhoto () {
         />
       </div>
       <div
-        className="buttonArea"
+        className="button-area"
       >
         <button
-          className="photoButton"
+          className="photo-button"
           onClick={takePhoto}
         >
         </button>
