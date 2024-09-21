@@ -81,3 +81,11 @@
     background-image: url("../../assets/pointIcon.png");
     
 }
+.mypage-menu__icon#password{
+    background-image: url("../../assets/changePassword.png");
+    
+}
+.mypage-menu__icon#logout{
+    background-image: url("../../assets/logout.png");
+    
+}
