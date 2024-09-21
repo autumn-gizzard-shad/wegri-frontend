@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import '../../../styles/map/kakaomap.css';
+import '../../../styles/map/floatingButton.css';
 import { useNavigate } from 'react-router-dom';
 
 function FloatingButton({category}) {

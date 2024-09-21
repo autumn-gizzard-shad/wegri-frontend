@@ -3,6 +3,7 @@ import BottomSheet from '../../components/maps/bottomSheet/bottomSheet';
 import useBottomSheet from "../../hooks/maps/bottomSheet/useBottomSheet";
 import BottomSheetContent from '../../components/maps/bottomSheet/bottomSheetContent';
 import FloatingButton from '../../components/maps/floatingButton/floatingButton';
+import RentManager from '../../components/maps/rentManager/rentManager';
 
 const { kakao } = window;
 
@@ -18,10 +19,11 @@ function KaKao({category,map_id}) {
   const { setIsOpen, isOpen, controls,onDragEnd, headerRef } = useBottomSheet();
   const [selectedMarkerState, setSelectedMarkerState] = useState(null);
   var selectedMarker = null;
-  const [ isRentOn, setIsRentOn ] = useState(false);
+  const [ isRentOn, setIsRentOn ] = useState(true);
   const [ currentPosition, setCurrentPosition] = useState(null);
   const [userMarker, setUserMarker] = useState(null);
   const [watchId, setWatchId] = useState(null);
+  const [markerList, setMarkerList] = useState([]);
 
   function createMarkerImage(imageSrc, width, height){
     const markerSize = new kakao.maps.Size(width, height);
@@ -37,7 +39,7 @@ function KaKao({category,map_id}) {
     return markerImage;
   }
 
-  function addMarker(position){
+  function addMarker(map,position){
     const basicImage = createMarkerImage(BASIC_PIN_SRC, PIN_WIDTH, PIN_HEIGHT);
     const selectedImage = createMarkerImage(SELECTED_PIN_SRC, PIN_WIDTH*1.3, PIN_HEIGHT*1.3);
 
@@ -64,6 +66,8 @@ function KaKao({category,map_id}) {
 
     });
 
+    const tempArr = markerList;
+    tempArr.push(marker);
   } 
 
   function keepGettingCurrentLoc() {
@@ -123,6 +127,7 @@ function KaKao({category,map_id}) {
           center : userLoc,
           level : 3 // 지도의 확대 레벨
       };
+
       const map =new kakao.maps.Map(container,options);
       setMap(map);
       // map = new kakao.maps.Map(container,options);    
@@ -147,7 +152,7 @@ function KaKao({category,map_id}) {
       
       // 주제에 맞는 pin ( == marker ) 생성
       for(var i = 0; i < positions.length; i++){
-        addMarker(positions[i]);  
+        addMarker(map,positions[i]);  
       }
     }
   },[userLoc]);
@@ -155,14 +160,13 @@ function KaKao({category,map_id}) {
   useEffect(() => {
     if(map){
       if(userMarker) userMarker.setMap(null);
-      console.log(userMarker);
       // 사용자의 현재 위치 pin
       const userImage = createMarkerImage(
         require("../../assets/map/user_location_circle.png"),
         25,
         25
       );
-      const userLocation =  new kakao.maps.LatLng(currentPosition.lat, currentPosition.lng);
+      const userLocation = new kakao.maps.LatLng(currentPosition.lat, currentPosition.lng);
 
       const marker = new kakao.maps.Marker({
         map : map,
@@ -174,6 +178,16 @@ function KaKao({category,map_id}) {
     }
   },[currentPosition]);
 
+  useEffect(() => {
+    if(map){
+      if(isRentOn){
+        markerList.forEach((marker)=>marker.setMap(null));
+      } else {
+        markerList.forEach((marker)=>marker.setMap(map));
+      }  
+    }
+  },[isRentOn]);
+
   return (
     <div id = "map" style = {{
         width : '100vw',
@@ -184,7 +198,14 @@ function KaKao({category,map_id}) {
       <FloatingButton
         category={category}
       ></FloatingButton>
-
+      {isRentOn
+      ?
+      <RentManager
+        isRentOn={isRentOn}
+        setIsRentOn={setIsRentOn}
+      >
+      </RentManager>
+      :
       <BottomSheet
         onDragEnd = {onDragEnd}
         controls = {controls}
@@ -193,10 +214,15 @@ function KaKao({category,map_id}) {
         <BottomSheetContent
           category = {category}
           selectedMarker = {selectedMarkerState}
-
-          currentPosition={currentPosition}
+          setSelectedMarkerState = {setSelectedMarkerState}
+          isOpen = {isOpen}
+          setIsOpen = {setIsOpen}
+          isRentOn = {isRentOn}
+          setIsRentOn = {setIsRentOn}
         ></BottomSheetContent>
       </BottomSheet>
+
+      }
     </div>
   );
 }

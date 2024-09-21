@@ -2,13 +2,29 @@ import base64TempImage from "./temp";
 import '../../../styles/map/bottomSheet.css';
 import { useEffect, useState } from "react";
 
-function BottomSheetContent({category, selectedMarker, currentPosition}) {
+function BottomSheetContent({category,
+  selectedMarker, 
+  setSelectedMarkerState,
+  isOpen, 
+  setIsOpen, 
+  isRentOn,
+  setIsRentOn
+  }) {
   const [isBicycle, setIsBicycle] = useState(false);
   const [isEmpty , setIsEmpty] =  useState(true);
   const [style, setStyle] = useState({ opacity: 1 });
 
   async function doRent() {
-    
+    if(!isRentOn){
+      setIsRentOn(true);
+    }
+    setSelectedMarkerState(null);
+    selectedMarker.setImage(selectedMarker.basicImage);
+    if(isOpen){
+      setIsOpen(false);
+    }
+    //
+
   }
 
 
@@ -38,10 +54,8 @@ function BottomSheetContent({category, selectedMarker, currentPosition}) {
 
     return (
       <div className="content-body">
-        {isEmpty && currentPosition
+        {isEmpty
         ?<div>
-          <p>{currentPosition.lat}</p>
-          <p>{currentPosition.lng}</p>
           <h2>환영합니다 !</h2>
           <p>핀을 눌러 내용을 확인하시거나</p>
           <p>우측 상단 버튼을 눌러 새로운 핀을 등록하세요.</p>

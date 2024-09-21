@@ -24,6 +24,7 @@ h2{
   color: white;
   margin-left : 45%;
   margin-top : 5px;
+  cursor: pointer;
 }
 
 .categorical-text {
