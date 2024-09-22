@@ -7,12 +7,40 @@ import "../../styles/pages/moreMenu.css"
 import { useEffect, useState } from "react"
 import Modal from "../../components/Modal"
 import CommonButton from "../../components/CommonButton"
+import { MainApi } from "../../app/MainApi"
+import EmojiPicker from "emoji-picker-react"
 function MoreMenu(props){
+    const [mapList,setMapList] = useState([
+        {
+            "map_id": "1",
+            "map_title": "title1",
+            "map_desc": "desc1 desc1 desc1 desc1 desc1 desc1 desc1 desc1 desc1 desc1 desc1 desc1 desc1 ",
+            "map_emoji": "❤️",
+            "pin_count": 123
+        },
+        {
+            "map_id": "3",
+            "map_title": "title2",
+            "map_desc": "desc2 desc2 desc2 desc2 desc2 desc2 desc2 desc2 desc2 desc2 desc2 desc2 ",
+            "map_emoji": "❤️",
+            "pin_count": 33
+        },{
+            "map_id": "4",
+            "map_title": "title3",
+            "map_desc": "desc3 desc3 desc3 desc3 desc3 desc3 desc3 desc3 desc3 desc3 desc3 desc3 desc3 desc3 ",
+            "map_emoji": "❤️",
+            "pin_count": 20
+        }
+   ])
 
     const location = useLocation();
     const navigate = useNavigate();
     const [plusBtn,setPlusBtn] = useState("plus");
     const [modalOpen, setModalOpen] = useState(false);
+    const [emojiOpen, setEmojiOpen ] = useState(false)
+    const [pickedEmoji,setPickedEmoji] = useState("");
+    const [modalTitle,setModalTitle] = useState("")
+    const [modalDesc, setModalDesc] = useState("")
     const openModal = () => {
         if(modalOpen === true){
             setPlusBtn("plus");
@@ -25,6 +53,47 @@ function MoreMenu(props){
         }
     }
     const address = location.state.address;
+    const onEmojiClick = (emoji) =>{
+        setEmojiOpen(false)
+        setPickedEmoji(emoji.emoji)
+    }
+    const postNewMap = () => {
+        
+        
+        MainApi.post("/api/maps",{
+            "map_title": modalTitle,
+            "map_desc": modalDesc,
+            "map_emoji": pickedEmoji
+        }).then((response) => {
+            setModalOpen(false)
+        }).catch((error) => {
+            alert("post error")
+            console.log(MainApi.defaults)
+        })
+    }
+
+    useEffect(()=>{
+        const sessionMapList = sessionStorage.getItem('moreList')
+
+        if(sessionMapList === null){
+            MainApi.get('/api/maps/more')
+            .then(
+                response => {
+                    sessionStorage.setItem('moreList',response.data.map_list)
+                    setMapList(response.data.map_list)
+                }
+            ).catch(error => {})
+        }
+        else{
+            setMapList(sessionMapList)
+        }
+    },[]);
+
+    useEffect(()=>{
+        setModalDesc("")
+        setModalTitle("")
+        setPickedEmoji("")
+    },[modalOpen])
     return(
         
         <div className="more-index">
@@ -41,18 +110,16 @@ function MoreMenu(props){
                 </div>
 
             </div>
-            <MapButton size="small"></MapButton>
-            <MapButton size="small"></MapButton>
-            <MapButton size="small"></MapButton>
-            <MapButton size="small"></MapButton>
-            <MapButton size="small"></MapButton>
-            <MapButton size="small"></MapButton>
-            <MapButton size="small"></MapButton>
-            <MapButton size="small"></MapButton> 
-            <MapButton size="small"></MapButton>
+            {
+                mapList.map((value,index) => (
+                    
+                    <MapButton content={value} size="small"></MapButton>
+                ))
+            }
+            
             <PlusButton type={plusBtn} onClick={(event)=>openModal()}></PlusButton>
             {
-                modalOpen ?
+                modalOpen &&
                 <Modal>
                     
                     <div className="modal-top">
@@ -60,35 +127,39 @@ function MoreMenu(props){
                             제목
                         </div>
                         <div className="modal-title__input">
-                            <input className="modal-title__input-text">
+                            <input className="modal-title__input-text" onChange={(event) => {setModalTitle(event.target.value)}} value={modalTitle}>
 
                             </input>
-                            <div className="modal-title__input-emoji">
-
+                            <div className="modal-title__input-emoji" onClick={() => {setEmojiOpen(true)}}>
+                                {pickedEmoji}
                             </div>
+                            
 
                         </div>
-
+                        
                     </div>
+                    { emojiOpen && <EmojiPicker className="emoji-picker" onEmojiClick={(emoji) =>{onEmojiClick(emoji)}} style={{zIndex:10,position:"absolute"}}></EmojiPicker>}
                     <div className="modal-content">
                         <div className="modal-content__desc">
                             자세한 설명
                         </div>
-                        <input className="modal-content__input-text">
+                        <textarea className="modal-content__input-text" onChange={event => {setModalDesc(event.target.value)}} value={modalDesc}maxLength={100} >
 
-                        </input>
+                        </textarea>
 
                     </div>
-                    <CommonButton backgroundColor="#6DC553" width="84%" >
-                        <div>                              
-                            작성 완료
-                        </div>
-                    </CommonButton>
+                    <div className="modal-content__complete" onClick={(event) => {postNewMap()}}>
+                        <CommonButton backgroundColor="#6DC553" width="84%" >
+                            <div>                              
+                                작성 완료
+                            </div>
+                        </CommonButton>
+                    </div>
+                    
 
                        
                 </Modal>
-                :          
-                ""
+              
 
             }
             
