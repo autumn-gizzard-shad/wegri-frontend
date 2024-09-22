@@ -6,6 +6,7 @@ import {Routes,Router,Route,BrowserRouter} from "react-router-dom"
 import MoreView from './mainMenu/MoreMenu';
 import LikedMenu from './mainMenu/LikedMenu';
 import Mypage from './myPage/Mypage';
+import PointExchange from './myPage/PointExchange';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
             <Route path='/more' element={<MoreView></MoreView>}/>
             <Route path='/liked' element={<LikedMenu></LikedMenu>}/>
             <Route path='/mypage' element={<Mypage></Mypage>}/>
+            <Route path='/point' element={<PointExchange></PointExchange>}/>
             
 
           </Routes>
