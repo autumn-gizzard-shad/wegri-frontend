@@ -5,7 +5,7 @@ function MapButton(props){
         <div className="map-btn button" id={props.size}>
             <div className="map-btn__content">
                 <div className="map-btn__title">
-                    title
+                    {props.content.map_title}
                 </div>
                 {
                     props.size === "small" ?
@@ -14,7 +14,7 @@ function MapButton(props){
                     ""
                 }
                 <div className="map-btn__pins">
-                    pins
+                    {props.content.pin_count}
                 </div>
 
             </div>
@@ -22,10 +22,10 @@ function MapButton(props){
                 props.size === "big" ?
                 <div className="map-btn__content">
                     <div className="map-btn__desc">
-                        desc desc desc desc desc desc
+                        {props.content.map_desc}
                     </div>
                     <div className="map-btn__emoji" id="big">
-                        🚲
+                        {props.content.map_emoji}
                     </div> 
 
                 </div>
