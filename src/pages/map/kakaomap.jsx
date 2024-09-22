@@ -105,6 +105,8 @@ function KaKao() {
           maximumAge : 0,
         }
       );
+      console.log(watchId);
+      sessionStorage.setItem("watchId",watchId);
       setWatchId(watchId);
 
     }
@@ -112,8 +114,10 @@ function KaKao() {
 
   // 추적 stop
   function stopGeetingCurrentLoc(){
-    if(watchId){
-      navigator.geolocation.clearWatch(watchId);
+
+    const ID = sessionStorage.getItem("watchId");
+    if(ID){
+      navigator.geolocation.clearWatch(ID);
       setWatchId(null);
     }
   }
@@ -131,7 +135,6 @@ function KaKao() {
         if (status === kakao.maps.services.Status.OK) {
           addressString = result[0].address.address_name;
           if(category === "bicycle") {
-            console.log(item);
             if(item.pin_is_rent){
               const position = {
                 date:item.pin_date,

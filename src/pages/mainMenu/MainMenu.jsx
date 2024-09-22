@@ -42,20 +42,20 @@ function MainMenu() {
 
         });
       }
-
       if(!sessionStorage.getItem("accessToken")){
         sessionStorage.setItem("accessToken",location.search.slice(7));
         MainApi.defaults.headers.common["Authorization"] = `Bearer ${location.search.slice(7)}`;
 
       }
+      setMapList(null);
       getUserLoc();
     },[]);
 
     useEffect(()=>{
       if(userLocStr){
         const sessionMapList = sessionStorage.getItem('mapList')
-
-        if(sessionMapList === null){
+        console.log(111);
+        // if(sessionMapList === null){
           MainApi.get('/api/maps')
           .then(
               response => {
@@ -63,10 +63,10 @@ function MainMenu() {
                   setMapList(response.data.map_list)
               }
           ).catch(error => {})
-        }
-        else{
-          setMapList(JSON.parse(sessionMapList).mapList)
-        }
+        // }
+        // else{
+        //   setMapList(JSON.parse(sessionMapList).mapList)
+        // }
       }
     },[userLocStr]);
 
