@@ -58,7 +58,6 @@ function BottomSheetContent({
     }
   },[selectedMarker]);
 
-  const provider = "민국";
 
     return (
       <div className="content-body">
@@ -96,7 +95,6 @@ function BottomSheetContent({
         }
 
         <ToastContainer
-          position="bottom-center"
           autoClose={3000}
           hideProgressBar={false}
           closeOnClick={true}
