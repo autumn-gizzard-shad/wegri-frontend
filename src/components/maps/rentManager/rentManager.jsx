@@ -20,7 +20,7 @@ function RentManager({isRentOn, setIsRentOn,map_id,selectedMarkerInfo}) {
         "from" : "returnButton", 
         "category" : "bicycle",
         "map_id" : map_id,
-        "pin_id" : selectedMarkerInfo.pin_id
+        "pin_id" : selectedMarkerInfo.id
         }
       }
     );

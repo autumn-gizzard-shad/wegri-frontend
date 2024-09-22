@@ -15,7 +15,6 @@ async function fetchPins(map_id) {
     );
 
     const pin_list = response.data.pin_list;
-    console.log(pin_list);
 
     return pin_list;
   } catch(error){
@@ -52,11 +51,30 @@ async function fetchSavePins(category,fromWhere,date,image,coords,map_id,pin_id)
       }
     );
 
-    console.log(response);
 
   } catch (error) {
     console.error(error);
   }
 }
 
-export {fetchPins, fetchSavePins};
+async function fetchRentBicycle(map_id, pin_id) {
+  try{
+    const token = sessionStorage.getItem("accessToken");
+    const url = `/api/maps/${map_id}/pins/rental`;
+
+    const response = await MainApi.post(
+      url,
+      {
+        headers : {
+          Authorization : "Bearer "+token
+        },
+        "pin_id" : pin_id
+      }
+    );
+
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export {fetchPins, fetchSavePins, fetchRentBicycle};

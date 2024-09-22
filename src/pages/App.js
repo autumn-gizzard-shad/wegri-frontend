@@ -1,4 +1,3 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import logo from '../assets/logo.svg';
 import '../styles/App.css';
 import MainMenu from './mainMenu/MainMenu';
@@ -24,7 +23,7 @@ function App() {
             <Route path='/liked' element={<LikedMenu></LikedMenu>}/>
             <Route path='/mypage' element={<Mypage></Mypage>}/>
             <Route path='/point' element={<PointExchange></PointExchange>}/>
-            <Route path="/map" element={<KaKao map_id={2}></KaKao>}/>
+            <Route path="/map" element={<KaKao></KaKao>}/>
             <Route path="/map/photo" element={<TakePhotoPage></TakePhotoPage>}/>
 
 

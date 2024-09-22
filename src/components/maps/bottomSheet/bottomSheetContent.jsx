@@ -4,9 +4,11 @@ import { useEffect, useState } from "react";
 import { distanceMeterCalc } from "../../../utils/calculator";
 import { toast ,ToastContainer} from 'react-toastify';
 import 'react-toastify/ReactToastify.css';
+import { fetchRentBicycle } from "../../../app/map_api/pinApi";
 
 
 function BottomSheetContent({
+  map_id,
   category,
   selectedMarker,
   setSelectedMarkerState,
@@ -27,6 +29,9 @@ function BottomSheetContent({
       notify();
       return;
     }
+    
+    await fetchRentBicycle(map_id, selectedMarkerInfo.id);
+
     if(!isRentOn){
       setIsRentOn(true);
     }
@@ -69,7 +74,7 @@ function BottomSheetContent({
         :<div>
           <h2 className="content-date">{selectedMarkerInfo?.date}</h2>
           <p>{selectedMarkerInfo?.addr}</p>
-          {/* <img className="content-image" src= {imageSrcBase64}/>         */}
+          <img className="content-image" src= {selectedMarkerInfo?.image}/>        
         </div>
           }
         {!isEmpty && isBicycle
@@ -85,7 +90,7 @@ function BottomSheetContent({
           </button>
           <div className="categorical-text">
             <p className="row-head">제공자</p>
-            <p className="row-content">{provider}</p>
+            <p className="row-content">{selectedMarkerInfo?.provider}</p>
           </div>
         </div>
         : <div></div>

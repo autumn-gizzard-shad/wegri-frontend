@@ -6,10 +6,13 @@ import FloatingButton from '../../components/maps/floatingButton/floatingButton'
 import RentManager from '../../components/maps/rentManager/rentManager';
 import { MainApi } from '../../app/MainApi';
 import { fetchPins } from '../../app/map_api/pinApi';
+import { useLocation } from 'react-router-dom';
 
 const { kakao } = window;
 
-function KaKao({map_id}) {
+function KaKao() {
+  const location = useLocation();
+  const map_id = location.state.map_id;
   var geocoder;
   var category = "etc";
   if(map_id === 1 ) category = "bicycle";
@@ -166,7 +169,6 @@ function KaKao({map_id}) {
     for(let i = 0 ; i < list_from_BE.length; i++ ){
       const item = list_from_BE[i];
 
-      console.log(item.pin_latitude);
       geocoder.coord2Address(item.pin_longitude, item.pin_latitude, (result, status)=> {
         if (status === kakao.maps.services.Status.OK) {
           addressString = result[0].address.address_name;
@@ -179,53 +181,28 @@ function KaKao({map_id}) {
 
           };
           if(category === "bicycle") {
+            console.log(item);
             position = {
               date:item.pin_date,
               lat:item.pin_latitude,
               lng:item.pin_longitude,
               addr:addressString,
               image:item.pin_image,
-              pin_id : item.pin_id,
-              pin_provider : item.pin_provider,
-              pin_is_rent : item.pin_is_rent  
+              id : item.pin_id,
+              provider : item.pin_provider,
+              is_rent : item.pin_is_rent  
             };
+            console.log(position.id);
           }
           addMarker(map,position);  
-        }
-        else {
-          console.log("wut");
         }
       });
     }
   }
 
 
-  const requestLogin = async () => {
-    try{
-        const response = await MainApi.post(
-            '/api/members/login',
-            {
-                "member_id":"test1",
-                "password": "test1",
-            },
-        );
-      
-        
-        sessionStorage.setItem("accessToken",response.data.token);
-        MainApi.defaults.headers.common["Authorization"] = `Bearer ${response.data.token}`;
-    }
-    catch(error){
-        console.error(error);
-        alert("아이디 또는 비밀번호가 잘못 되었습니다.")
-    }
-
-  }
-
-
 
   useEffect(() => {
-    requestLogin();
-
     async function getCoords () {
       keepGettingCurrentLoc();
       var userInitialLoc;
@@ -279,8 +256,6 @@ function KaKao({map_id}) {
 
       // 유저 이동경로 기록하기
       if(isRentOn){
-        console.log(currentPosition.lat);
-        console.log(currentPosition.lng);
         const tempArr = userPathList;
         tempArr.push(
           new kakao.maps.LatLng(currentPosition.lat, currentPosition.lng)
@@ -326,9 +301,7 @@ function KaKao({map_id}) {
   useEffect(() => {
     if(map){
       if(isRentOn){
-        console.log(markerList);
         markerList.forEach((marker)=>{
-          console.log(marker);
           marker.setMap(null);
         });
         if(isOpen){
@@ -371,6 +344,7 @@ function KaKao({map_id}) {
         headerRef = {headerRef}
       >
         <BottomSheetContent
+          map_id = {map_id}
           category = {category}
           selectedMarker = {selectedMarkerState}
           setSelectedMarkerState = {setSelectedMarkerState}

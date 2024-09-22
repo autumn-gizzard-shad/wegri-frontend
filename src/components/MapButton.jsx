@@ -1,8 +1,20 @@
 import "../styles/component/components.css"
+import { useNavigate } from "react-router-dom";
+
+
 function MapButton(props){
+    const navigate = useNavigate();
 
     return(
-        <div className="map-btn button" id={props.size}>
+        <div 
+        className="map-btn button" 
+        id={props.size}
+        onClick={()=>navigate("/map",
+            {state: {
+                "map_id" : props.content.map_id,
+                }
+            }
+        )}>
             <div className="map-btn__content">
                 <div className="map-btn__title">
                     {props.content.map_title}
