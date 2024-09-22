@@ -4,18 +4,23 @@ import useBottomSheet from "../../hooks/maps/bottomSheet/useBottomSheet";
 import BottomSheetContent from '../../components/maps/bottomSheet/bottomSheetContent';
 import FloatingButton from '../../components/maps/floatingButton/floatingButton';
 import RentManager from '../../components/maps/rentManager/rentManager';
+import { MainApi } from '../../app/MainApi';
+import { fetchPins } from '../../app/map_api/pinApi';
 
 const { kakao } = window;
 
-function KaKao({category,map_id}) {
+function KaKao({map_id}) {
   var geocoder;
-
+  var category = "etc";
+  if(map_id === 1 ) category = "bicycle";
   const [map, setMap] = useState(null);
-
   const PIN_WIDTH = 60;
   const PIN_HEIGHT = 69;
-  const BASIC_PIN_SRC = require("../../assets/map_emoji/"+category+"_basic.png");
-  const SELECTED_PIN_SRC = require("../../assets/map_emoji/"+category+"_selected.png");
+  const BASIC_PIN_SRC = require("../../assets/map_emoji/basic.png");
+  const SELECTED_PIN_SRC = require("../../assets/map_emoji/selected.png");
+  // const BASIC_PIN_SRC = require("../../assets/map_emoji/"+category+"_basic.png");
+  // const SELECTED_PIN_SRC = require("../../assets/map_emoji/"+category+"_selected.png");
+
   const [userLoc, setUserLoc] = useState(null);
   const {setIsOpen, isOpen, controls,onDragEnd, headerRef } = useBottomSheet();
   const [selectedMarkerState, setSelectedMarkerState] = useState(null);
@@ -28,6 +33,7 @@ function KaKao({category,map_id}) {
   const [markerList, setMarkerList] = useState([]);
   const [userPathList, setUserPathList] = useState([]);
   const [userPolyPath, setUserPolyPath] = useState(null);
+
 
   function createMarkerImage(imageSrc, width, height){
     const markerSize = new kakao.maps.Size(width, height);
@@ -80,6 +86,7 @@ function KaKao({category,map_id}) {
 
     const tempArr = markerList;
     tempArr.push(marker);
+    setMarkerList(tempArr);
   } 
 
   function keepGettingCurrentLoc() {
@@ -112,6 +119,8 @@ function KaKao({category,map_id}) {
   }
 
   async function fetchMarkerList(map) {
+    // await fetchPins(map_id);
+
     const list_from_BE = [
       {
         pin_date : "2024-09-15",
@@ -136,10 +145,27 @@ function KaKao({category,map_id}) {
         pin_latitude : 35.886515,
         pin_longitude : 128.601198,
         pin_image : "base64---"
+      },
+      {
+        pin_date : "2023-12-25",
+        pin_latitude : 35.881833,
+        pin_longitude : 128.592960,
+        pin_image : "base64--"
+      },
+      {
+        pin_date : "2024-09-09",
+        pin_latitude : 35.881603,
+        pin_longitude : 128.592730,
+        pin_image : "base64--"
+      },
+      {
+        pin_date : "2022-02-02",
+        pin_latitude : 35.881164,
+        pin_longitude : 128.604636,
+        pin_image : "base64---"
       }
     ];
 
-    const positions = [];
     var addressString = "기본 주소예요";
     for(let i = 0 ; i < list_from_BE.length; i++ ){
       const item = list_from_BE[i];
@@ -159,7 +185,55 @@ function KaKao({category,map_id}) {
       });
     }
   }
+
+
+  const requestLogin = async () => {
+    try{
+        const response = await MainApi.post(
+            '/api/members/login',
+            {
+                "member_id":"test1",
+                "password": "test1",
+            },
+        );
+      
+        
+        sessionStorage.setItem("accessToken",response.data.token);
+        MainApi.defaults.headers.common["Authorization"] = `Bearer ${response.data.token}`;
+    }
+    catch(error){
+        console.error(error);
+        alert("아이디 또는 비밀번호가 잘못 되었습니다.")
+    }
+
+  }
+
+  const rr = async () => {
+    try{
+      const token = await sessionStorage.getItem("accessToken");
+      console.log(token);
+      const response = await MainApi.get(
+          '/api/maps',
+          {
+            headers : {
+              Authorization : "Bearer "+token
+            }
+          }
+      );
+    
+      console.log(response);
+      // sessionStorage.setItem("accessToken",response.data.token);
+      // MainApi.defaults.headers.common["Authorization"] = `Bearer ${response.data.token}`;
+  }
+  catch(error){
+      console.error(error);
+      // alert("아이디 또는 비밀번호가 잘못 되었습니다.")
+  }
+  }
+
+
   useEffect(() => {
+    requestLogin();
     async function getCoords () {
       keepGettingCurrentLoc();
       var userInitialLoc;
@@ -184,6 +258,8 @@ function KaKao({category,map_id}) {
     async function mapEffectFunction() {
       if(userLoc){
         // map 생성
+        rr();
+
         const container = document.getElementById('map');
         const options = {
             center : userLoc,
@@ -199,7 +275,6 @@ function KaKao({category,map_id}) {
         await fetchMarkerList(map);
         // const positions = await fetchMarkerList();
         // console.log(positions);
-        console.log(11);
       }
   
     }
@@ -261,7 +336,15 @@ function KaKao({category,map_id}) {
   useEffect(() => {
     if(map){
       if(isRentOn){
-        markerList.forEach((marker)=>marker.setMap(null));
+        console.log(markerList);
+        markerList.forEach((marker)=>{
+          console.log(marker);
+          marker.setMap(null);
+        });
+        if(isOpen){
+          setIsOpen(false);
+        }
+    
       } else {
         markerList.forEach((marker)=>marker.setMap(map));
         userPolyPath.setMap(null);
@@ -280,10 +363,12 @@ function KaKao({category,map_id}) {
 
       <FloatingButton
         category={category}
+        map_id={map_id}
       ></FloatingButton>
       {isRentOn
       ?
       <RentManager
+        map_id = {map_id}
         isRentOn={isRentOn}
         setIsRentOn={setIsRentOn}
       >
@@ -300,8 +385,6 @@ function KaKao({category,map_id}) {
           setSelectedMarkerState = {setSelectedMarkerState}
           selectedMarkerInfo = {selectedMarkerInfo}
           currentPosition = {currentPosition}
-          isOpen = {isOpen}
-          setIsOpen = {setIsOpen}
           isRentOn = {isRentOn}
           setIsRentOn = {setIsRentOn}
         ></BottomSheetContent>

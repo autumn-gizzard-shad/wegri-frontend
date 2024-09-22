@@ -2,15 +2,18 @@ import { useEffect, useRef, useState } from "react";
 import '../../styles/map/takePhoto.css';
 import { useNavigate, useLocation } from "react-router-dom";
 import { dateCalc } from "../../utils/calculator";
+import { fetchSavePins } from "../../app/map_api/pinApi";
 function TakePhotoPage () {
   const videoRef = useRef(null);
   const streamRef = useRef(null);
 
   const location = useLocation();
   const navigate = useNavigate();
-  
+
+  // returnButton( from rentManager ) or floatingButton ( from floatingButton )
   const fromWhere = location.state.from;
-  // returnButton or floatingButton
+  const category = location.state.category;
+  const map_id = location.state.map_id;
 
   function pauseVideo () {
     videoRef.current.pause();
@@ -48,19 +51,9 @@ function TakePhotoPage () {
     }
   }
 
-  async function fetchImage(image,coords){
-    const date = dateCalc();
-    
-    console.log(coords);
-    if(fromWhere === "floatingButton"){
-      console.log("FB");
-    } else if ( fromWhere === "returnButton"){
-      console.log("RB");
-    } else {
-      console.error("what are you ????");
-    }
-  }
   async function takePhoto () { 
+    const date = dateCalc();
+
     // 1. pause
     pauseVideo();
 
@@ -70,7 +63,7 @@ function TakePhotoPage () {
     // 3. get current location
     const coords = await getCurrentCoords();
     // TODO: 4. fetch
-    await fetchImage(image,coords);
+    await fetchSavePins(category,fromWhere,date,image,coords,map_id);
     // 5. pop
     navigate(-1);
   }

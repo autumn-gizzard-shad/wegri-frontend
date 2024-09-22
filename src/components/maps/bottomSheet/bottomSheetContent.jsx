@@ -2,17 +2,15 @@ import base64TempImage from "./temp";
 import '../../../styles/map/bottomSheet.css';
 import { useEffect, useState } from "react";
 import { distanceMeterCalc } from "../../../utils/calculator";
-import Toast from "../../../utils/toast";
+import { toast ,ToastContainer} from 'react-toastify';
+import 'react-toastify/ReactToastify.css';
 
-const { kakao } = window;
 
 function BottomSheetContent({
   category,
   selectedMarker,
   setSelectedMarkerState,
   selectedMarkerInfo,
-  isOpen, 
-  setIsOpen, 
   isRentOn,
   setIsRentOn,
   currentPosition
@@ -20,13 +18,13 @@ function BottomSheetContent({
   const [isBicycle, setIsBicycle] = useState(false);
   const [isEmpty , setIsEmpty] =  useState(true);
   const [style, setStyle] = useState({ opacity: 1 });
-  const [toast, setToast] = useState(false);
-
+  
+  const notify = () => toast("자전거에 가까이 가셔야 합니다.");
 
   async function doRent() {
     const distance = distanceMeterCalc(selectedMarkerInfo.lat, selectedMarkerInfo.lng, currentPosition.lat,currentPosition.lng);
-    if(distance >= 5){
-      setToast(true);
+    if(distance >= 50){
+      notify();
       return;
     }
     if(!isRentOn){
@@ -34,10 +32,6 @@ function BottomSheetContent({
     }
     setSelectedMarkerState(null);
     selectedMarker.setImage(selectedMarker.basicImage);
-    if(isOpen){
-      setIsOpen(false);
-    }
-    //
   }
 
 
@@ -60,14 +54,11 @@ function BottomSheetContent({
     }
   },[selectedMarker]);
 
-  const imageSrcBase64 = base64TempImage;
-  const pinDate = "2024-09-16";
   const provider = "민국";
 
     return (
       <div className="content-body">
-        {toast && <Toast setToast={setToast} text="자전거에 가까이 가셔야 합니다."></Toast>}
-
+        {/* {toast && <Toast setToast={setToast} text="자전거에 가까이 가셔야 합니다."></Toast>} */}
         {isEmpty
         ?<div>
           <h2>환영합니다 !</h2>
@@ -99,6 +90,16 @@ function BottomSheetContent({
         </div>
         : <div></div>
         }
+
+        <ToastContainer
+          position="bottom-center"
+          autoClose={3000}
+          hideProgressBar={false}
+          closeOnClick={true}
+          draggable
+          theme="light"
+        />
+
      </div>
     );
 }

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import '../../../styles/map/rentManager.css';
 import { useNavigate } from 'react-router-dom';
 
-function RentManager({isRentOn, setIsRentOn}) {
+function RentManager({isRentOn, setIsRentOn,map_id}) {
   const [style, setStyle] = useState({ opacity: 1 });
   const [sec, setSec] = useState(0);
   const [min,setMin] = useState(0);
@@ -15,7 +15,14 @@ function RentManager({isRentOn, setIsRentOn}) {
     if(isRentOn){
       setIsRentOn(false);
     }
-    navigate("/map/photo", {state: {"from" : "returnButton"}});
+    navigate("/map/photo", 
+      {state: {
+        "from" : "returnButton", 
+        "category" : "bicycle",
+        "map_id" : map_id
+        }
+      }
+    );
   }
 
   const upOpacity = () => {

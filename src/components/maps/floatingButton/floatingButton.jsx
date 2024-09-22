@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import '../../../styles/map/floatingButton.css';
 import { useNavigate } from 'react-router-dom';
 
-function FloatingButton({category}) {
+function FloatingButton({category, map_id}) {
   const [style, setStyle] = useState({ opacity: 1 });
   const navigate = useNavigate();
   var featuredImageName = "photo";
@@ -11,7 +11,14 @@ function FloatingButton({category}) {
   }
 
   function doImage() {
-    navigate("/map/photo", {state: {"from" : "floatingButton"}});
+    navigate("/map/photo", 
+      {state: {
+        "from" : "floatingButton", 
+        "category" : `${category}`,
+        "map_id" : map_id
+        }
+      }
+    );
   }
   
   const upOpacity = () => {

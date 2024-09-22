@@ -9,7 +9,7 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <Routes>
-          <Route path="/map" element={<KaKao category="bicycle"></KaKao>}/>
+          <Route path="/map" element={<KaKao map_id={1}></KaKao>}/>
           <Route path="/map/photo" element={<TakePhotoPage></TakePhotoPage>}/>
         </Routes>
       </BrowserRouter>
