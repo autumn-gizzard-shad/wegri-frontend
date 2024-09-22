@@ -14,6 +14,7 @@ function TakePhotoPage () {
   const fromWhere = location.state.from;
   const category = location.state.category;
   const map_id = location.state.map_id;
+  const pin_id = location.state.pin_id;
 
   function pauseVideo () {
     videoRef.current.pause();
@@ -63,7 +64,7 @@ function TakePhotoPage () {
     // 3. get current location
     const coords = await getCurrentCoords();
     // TODO: 4. fetch
-    await fetchSavePins(category,fromWhere,date,image,coords,map_id);
+    await fetchSavePins(category,fromWhere,date,image,coords,map_id,pin_id);
     // 5. pop
     navigate(-1);
   }

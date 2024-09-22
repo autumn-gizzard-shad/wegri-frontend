@@ -15,7 +15,8 @@ function FloatingButton({category, map_id}) {
       {state: {
         "from" : "floatingButton", 
         "category" : `${category}`,
-        "map_id" : map_id
+        "map_id" : map_id,
+        "pin_id" : -1
         }
       }
     );

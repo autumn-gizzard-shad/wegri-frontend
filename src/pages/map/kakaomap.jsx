@@ -72,13 +72,7 @@ function KaKao({map_id}) {
       }
 
       // bottomSheetContent에서 사용할 정보들
-      setSelectedMarkerInfo({
-        lat: position.lat,
-        lng: position.lng,
-        date: position.date,
-        addr:position.addr,
-        image:position.image
-      });
+      setSelectedMarkerInfo(position);
       setSelectedMarkerState(marker);
       selectedMarker = marker;
 
@@ -121,66 +115,85 @@ function KaKao({map_id}) {
   async function fetchMarkerList(map) {
     // await fetchPins(map_id);
 
-    const list_from_BE = [
-      {
-        pin_date : "2024-09-15",
-        pin_latitude : 35.870183,
-        pin_longitude : 128.606315,
-        pin_image : "base64---"
-      },
-      {
-        pin_date : "2024-09-16",
-        pin_latitude :35.883577,
-        pin_longitude : 128.594503,
-        pin_image : "base64---"
-      },
-      {
-        pin_date : "2024-09-14",
-        pin_latitude : 35.881630,
-        pin_longitude : 128.588109,
-        pin_image : "base64---"
-      },
-      {
-        pin_date : "2024-07-14",
-        pin_latitude : 35.886515,
-        pin_longitude : 128.601198,
-        pin_image : "base64---"
-      },
-      {
-        pin_date : "2023-12-25",
-        pin_latitude : 35.881833,
-        pin_longitude : 128.592960,
-        pin_image : "base64--"
-      },
-      {
-        pin_date : "2024-09-09",
-        pin_latitude : 35.881603,
-        pin_longitude : 128.592730,
-        pin_image : "base64--"
-      },
-      {
-        pin_date : "2022-02-02",
-        pin_latitude : 35.881164,
-        pin_longitude : 128.604636,
-        pin_image : "base64---"
-      }
-    ];
+    const list_from_BE = await fetchPins(map_id);
+    // console.log(list_from_BE);
+    // const list_from_BE = [
+    //   {
+    //     pin_date : "2024-09-15",
+    //     pin_latitude : 35.870183,
+    //     pin_longitude : 128.606315,
+    //     pin_image : "base64---"
+    //   },
+    //   {
+    //     pin_date : "2024-09-16",
+    //     pin_latitude :35.883577,
+    //     pin_longitude : 128.594503,
+    //     pin_image : "base64---"
+    //   },
+    //   {
+    //     pin_date : "2024-09-14",
+    //     pin_latitude : 35.881630,
+    //     pin_longitude : 128.588109,
+    //     pin_image : "base64---"
+    //   },
+    //   {
+    //     pin_date : "2024-07-14",
+    //     pin_latitude : 35.886515,
+    //     pin_longitude : 128.601198,
+    //     pin_image : "base64---"
+    //   },
+    //   {
+    //     pin_date : "2023-12-25",
+    //     pin_latitude : 35.881833,
+    //     pin_longitude : 128.592960,
+    //     pin_image : "base64--"
+    //   },
+    //   {
+    //     pin_date : "2024-09-09",
+    //     pin_latitude : 35.881603,
+    //     pin_longitude : 128.592730,
+    //     pin_image : "base64--"
+    //   },
+    //   {
+    //     pin_date : "2022-02-02",
+    //     pin_latitude : 35.881164,
+    //     pin_longitude : 128.604636,
+    //     pin_image : "base64---"
+    //   }
+    // ];
 
     var addressString = "기본 주소예요";
     for(let i = 0 ; i < list_from_BE.length; i++ ){
       const item = list_from_BE[i];
+
+      console.log(item.pin_latitude);
       geocoder.coord2Address(item.pin_longitude, item.pin_latitude, (result, status)=> {
         if (status === kakao.maps.services.Status.OK) {
           addressString = result[0].address.address_name;
-          const position = {
+          var position = {
             date:item.pin_date,
             lat:item.pin_latitude,
             lng:item.pin_longitude,
             addr:addressString,
             image:item.pin_image
+
           };
-          
+          if(category === "bicycle") {
+            position = {
+              date:item.pin_date,
+              lat:item.pin_latitude,
+              lng:item.pin_longitude,
+              addr:addressString,
+              image:item.pin_image,
+              pin_id : item.pin_id,
+              pin_provider : item.pin_provider,
+              pin_is_rent : item.pin_is_rent  
+            };
+          }
           addMarker(map,position);  
+        }
+        else {
+          console.log("wut");
         }
       });
     }
@@ -208,32 +221,11 @@ function KaKao({map_id}) {
 
   }
 
-  const rr = async () => {
-    try{
-      const token = await sessionStorage.getItem("accessToken");
-      console.log(token);
-      const response = await MainApi.get(
-          '/api/maps',
-          {
-            headers : {
-              Authorization : "Bearer "+token
-            }
-          }
-      );
-    
-      console.log(response);
-      // sessionStorage.setItem("accessToken",response.data.token);
-      // MainApi.defaults.headers.common["Authorization"] = `Bearer ${response.data.token}`;
-  }
-  catch(error){
-      console.error(error);
-      // alert("아이디 또는 비밀번호가 잘못 되었습니다.")
-  }
-  }
 
 
   useEffect(() => {
     requestLogin();
+
     async function getCoords () {
       keepGettingCurrentLoc();
       var userInitialLoc;
@@ -258,8 +250,6 @@ function KaKao({map_id}) {
     async function mapEffectFunction() {
       if(userLoc){
         // map 생성
-        rr();
-
         const container = document.getElementById('map');
         const options = {
             center : userLoc,
@@ -371,6 +361,7 @@ function KaKao({map_id}) {
         map_id = {map_id}
         isRentOn={isRentOn}
         setIsRentOn={setIsRentOn}
+        selectedMarkerInfo={selectedMarkerInfo}
       >
       </RentManager>
       :
