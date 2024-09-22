@@ -6,11 +6,13 @@ import FloatingButton from '../../components/maps/floatingButton/floatingButton'
 import RentManager from '../../components/maps/rentManager/rentManager';
 import { MainApi } from '../../app/MainApi';
 import { fetchPins } from '../../app/map_api/pinApi';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const { kakao } = window;
 
 function KaKao() {
+
+  const navigate = useNavigate();
   const location = useLocation();
   const map_id = location.state.map_id;
   var geocoder;
@@ -21,9 +23,6 @@ function KaKao() {
   const PIN_HEIGHT = 69;
   const BASIC_PIN_SRC = require("../../assets/map_emoji/basic.png");
   const SELECTED_PIN_SRC = require("../../assets/map_emoji/selected.png");
-  // const BASIC_PIN_SRC = require("../../assets/map_emoji/"+category+"_basic.png");
-  // const SELECTED_PIN_SRC = require("../../assets/map_emoji/"+category+"_selected.png");
-
   const [userLoc, setUserLoc] = useState(null);
   const {setIsOpen, isOpen, controls,onDragEnd, headerRef } = useBottomSheet();
   const [selectedMarkerState, setSelectedMarkerState] = useState(null);
@@ -37,7 +36,7 @@ function KaKao() {
   const [userPathList, setUserPathList] = useState([]);
   const [userPolyPath, setUserPolyPath] = useState(null);
 
-
+  // 마커 이미지 등록
   function createMarkerImage(imageSrc, width, height){
     const markerSize = new kakao.maps.Size(width, height);
     const markerOption = {offset: new kakao.maps.Point(width/2, height)};
@@ -52,6 +51,7 @@ function KaKao() {
     return markerImage;
   }
 
+  // 마커 찍기
   function addMarker(map,position){
     const basicImage = createMarkerImage(BASIC_PIN_SRC, PIN_WIDTH, PIN_HEIGHT);
     const selectedImage = createMarkerImage(SELECTED_PIN_SRC, PIN_WIDTH*1.3, PIN_HEIGHT*1.3);
@@ -86,6 +86,7 @@ function KaKao() {
     setMarkerList(tempArr);
   } 
 
+  // user Location 추적
   function keepGettingCurrentLoc() {
     if(navigator.geolocation){
       const watchId = navigator.geolocation.watchPosition(
@@ -108,6 +109,8 @@ function KaKao() {
 
     }
   }
+
+  // 추적 stop
   function stopGeetingCurrentLoc(){
     if(watchId){
       navigator.geolocation.clearWatch(watchId);
@@ -115,55 +118,10 @@ function KaKao() {
     }
   }
 
+  // 마커 리스트 만들기 <- pin 정보 가져오기
   async function fetchMarkerList(map) {
-    // await fetchPins(map_id);
 
     const list_from_BE = await fetchPins(map_id);
-    // console.log(list_from_BE);
-    // const list_from_BE = [
-    //   {
-    //     pin_date : "2024-09-15",
-    //     pin_latitude : 35.870183,
-    //     pin_longitude : 128.606315,
-    //     pin_image : "base64---"
-    //   },
-    //   {
-    //     pin_date : "2024-09-16",
-    //     pin_latitude :35.883577,
-    //     pin_longitude : 128.594503,
-    //     pin_image : "base64---"
-    //   },
-    //   {
-    //     pin_date : "2024-09-14",
-    //     pin_latitude : 35.881630,
-    //     pin_longitude : 128.588109,
-    //     pin_image : "base64---"
-    //   },
-    //   {
-    //     pin_date : "2024-07-14",
-    //     pin_latitude : 35.886515,
-    //     pin_longitude : 128.601198,
-    //     pin_image : "base64---"
-    //   },
-    //   {
-    //     pin_date : "2023-12-25",
-    //     pin_latitude : 35.881833,
-    //     pin_longitude : 128.592960,
-    //     pin_image : "base64--"
-    //   },
-    //   {
-    //     pin_date : "2024-09-09",
-    //     pin_latitude : 35.881603,
-    //     pin_longitude : 128.592730,
-    //     pin_image : "base64--"
-    //   },
-    //   {
-    //     pin_date : "2022-02-02",
-    //     pin_latitude : 35.881164,
-    //     pin_longitude : 128.604636,
-    //     pin_image : "base64---"
-    //   }
-    // ];
 
     var addressString = "기본 주소예요";
     for(let i = 0 ; i < list_from_BE.length; i++ ){
@@ -172,29 +130,34 @@ function KaKao() {
       geocoder.coord2Address(item.pin_longitude, item.pin_latitude, (result, status)=> {
         if (status === kakao.maps.services.Status.OK) {
           addressString = result[0].address.address_name;
-          var position = {
-            date:item.pin_date,
-            lat:item.pin_latitude,
-            lng:item.pin_longitude,
-            addr:addressString,
-            image:item.pin_image
-
-          };
           if(category === "bicycle") {
             console.log(item);
-            position = {
+            if(item.pin_is_rent){
+              const position = {
+                date:item.pin_date,
+                lat:item.pin_latitude,
+                lng:item.pin_longitude,
+                addr:addressString,
+                image:item.pin_image,
+                id : item.pin_id,
+                provider : item.pin_provider,
+                is_rent : item.pin_is_rent  
+              };
+              addMarker(map,position);  
+            }
+
+          } else {
+            const position = {
               date:item.pin_date,
               lat:item.pin_latitude,
               lng:item.pin_longitude,
               addr:addressString,
-              image:item.pin_image,
-              id : item.pin_id,
-              provider : item.pin_provider,
-              is_rent : item.pin_is_rent  
+              image:item.pin_image
+  
             };
-            console.log(position.id);
+            addMarker(map,position);  
+
           }
-          addMarker(map,position);  
         }
       });
     }
@@ -237,11 +200,8 @@ function KaKao() {
         setMap(map);
         setMarkerList([]);
 
-        // map = new kakao.maps.Map(container,options);  
         geocoder  = new kakao.maps.services.Geocoder(); 
         await fetchMarkerList(map);
-        // const positions = await fetchMarkerList();
-        // console.log(positions);
       }
   
     }
@@ -279,8 +239,7 @@ function KaKao() {
         setUserPolyPath(polyline);
         
       }
-
-        // 사용자의 현재 위치 pin
+      // 사용자의 현재 위치 pin
       const userImage = createMarkerImage(
         require("../../assets/map/user_location_circle.png"),
         25,
@@ -323,7 +282,17 @@ function KaKao() {
         height : '100vh',
         overflowY:"none",
     }}>
-
+      <div style={{
+        position:"fixed",
+        top: "5%",
+        left : "5%",
+        fontSize : "35px",
+        zIndex: "10"
+      }}
+        onClick={()=>navigate(-1)}
+      >
+        &lt;
+      </div>
       <FloatingButton
         category={category}
         map_id={map_id}

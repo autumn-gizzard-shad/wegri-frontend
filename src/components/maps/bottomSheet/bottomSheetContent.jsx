@@ -1,4 +1,3 @@
-import base64TempImage from "./temp";
 import '../../../styles/map/bottomSheet.css';
 import { useEffect, useState } from "react";
 import { distanceMeterCalc } from "../../../utils/calculator";

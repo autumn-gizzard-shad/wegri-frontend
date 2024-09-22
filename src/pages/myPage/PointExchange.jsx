@@ -72,7 +72,9 @@ function PointExchange(props){
         )
         .then(response => {
           setCurrentPoint(currentPoint-product_price);
-        }).catch(error => {})  
+        }).catch(error => {
+            console.error(error);
+        })  
       }
 
 
@@ -130,7 +132,7 @@ function PointExchange(props){
                                     <CommonButton width="82px" height="14px" backgroundColor="#6DC553">
                                         <div 
                                         className="product-content__button"  
-                                        onClick={exchangePoint(value.product_id,value.product_price)}
+                                        onClick={()=>exchangePoint(value.product_id,value.product_price)}
                                         >
                                             교환하기
                                         </div>

@@ -13,9 +13,13 @@ async function fetchPins(map_id) {
         }
       }
     );
-
-    const pin_list = response.data.pin_list;
-
+    var pin_list;
+    if(map_id == 1) {
+      pin_list = response.data.pin_List;
+    } else {
+      pin_list = response.data.pin_list;
+    }
+    console.log(response);
     return pin_list;
   } catch(error){
     console.error(error);
@@ -31,25 +35,38 @@ async function fetchSavePins(category,fromWhere,date,image,coords,map_id,pin_id)
   // map_id ::: int
   const token = sessionStorage.getItem("accessToken");
   var url = `/api/maps/${map_id}/pins`;
-  // if(fromWhere === "returnButton"){
-  //   url = `/api/maps/${}`; // TODO : pin_id 가져와야 함
-  // } 
+  if(fromWhere === "returnButton"){
+    url = `/api/maps/${map_id}/pins/${pin_id}/return`; // TODO : pin_id 가져와야 함
+  } 
 
   try {
-    const response = await MainApi.post(
-      url,
-      {
-        headers : {
-          Authorization : "Bearer "+token
-        },
-
-
-        "pin_date" : date,
-        "pin_latitude" : coords.lat,
-        "pin_longitude" : coords.lng,
-        "pin_image" : image
-      }
-    );
+    if(fromWhere !== "returnButton"){
+      const response = await MainApi.post(
+        url,
+        {
+          headers : {
+            Authorization : "Bearer "+token
+          },
+          "pin_date" : date,
+          "pin_latitude" : coords.lat,
+          "pin_longitude" : coords.lng,
+          "pin_image" : image
+        }
+      );  
+    } else {
+      const response = await MainApi.patch(
+        url,
+        {
+          headers : {
+            Authorization : "Bearer "+token
+          },
+          "pin_date" : date,
+          "pin_latitude" : coords.lat,
+          "pin_longitude" : coords.lng,
+          "pin_image" : image
+        }
+      );  
+    }
 
 
   } catch (error) {
@@ -61,7 +78,7 @@ async function fetchRentBicycle(map_id, pin_id) {
   try{
     const token = sessionStorage.getItem("accessToken");
     const url = `/api/maps/${map_id}/pins/rental`;
-
+    
     const response = await MainApi.post(
       url,
       {

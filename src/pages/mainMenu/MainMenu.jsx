@@ -4,38 +4,17 @@ import "../../styles/pages/mainMenu.css"
 import MapButton from "../../components/MapButton";
 import CommonButton from "../../components/CommonButton";
 import Bottom from "../../components/Bottom";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate,  } from "react-router-dom";
 import { MainApi } from "../../app/MainApi";
 
 const { kakao } = window;
 
 function MainMenu() {
     const [ userLocStr , setUserLocStr] = useState(null);
-
-    const [mapList,setMapList] = useState([
-        {
-            "map_id": "1",
-            "map_title": "title1",
-            "map_desc": "desc1 desc1 desc1 desc1 desc1 desc1 desc1 desc1 desc1 desc1 desc1 desc1 desc1 ",
-            "map_emoji": "❤️",
-            "pin_count": 123
-        },
-        {
-            "map_id": "3",
-            "map_title": "title2",
-            "map_desc": "desc2 desc2 desc2 desc2 desc2 desc2 desc2 desc2 desc2 desc2 desc2 desc2 ",
-            "map_emoji": "❤️",
-            "pin_count": 33
-        },{
-            "map_id": "4",
-            "map_title": "title3",
-            "map_desc": "desc3 desc3 desc3 desc3 desc3 desc3 desc3 desc3 desc3 desc3 desc3 desc3 desc3 desc3 ",
-            "map_emoji": "❤️",
-            "pin_count": 20
-        }
-   ])
+    const [mapList,setMapList] = useState(null)
     const [address,setAddress] = useState("대구 북구 대현로 19길")
     const navigate = useNavigate()
+    const location = useLocation()
     const MoreMenu = () => {
         navigate("/more",{state:{"address":address}})
     }
@@ -64,6 +43,11 @@ function MainMenu() {
         });
       }
 
+      if(!sessionStorage.getItem("accessToken")){
+        sessionStorage.setItem("accessToken",location.search.slice(7));
+        MainApi.defaults.headers.common["Authorization"] = `Bearer ${location.search.slice(7)}`;
+
+      }
       getUserLoc();
     },[]);
 
@@ -93,10 +77,12 @@ function MainMenu() {
                 <div>{sessionStorage.getItem("addressString")}</div>
             </Header>
             {
-                mapList.map((value,index) => (
+              mapList
+              ? mapList.map((value,index) => (
                     
                     <MapButton content={value} size="big"></MapButton>
                 ))
+              : <div></div>
             }
             <CommonButton width={"320px"} height={"32px"} backgroundColor="white" >
                 <div className="button-content button-more" onClick={(event) => MoreMenu()}>
