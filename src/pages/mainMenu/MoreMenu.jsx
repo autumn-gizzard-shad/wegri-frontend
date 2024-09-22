@@ -74,20 +74,21 @@ function MoreMenu(props){
 
     useEffect(()=>{
         const sessionMapList = sessionStorage.getItem('moreList')
-
         if(sessionMapList === null){
             MainApi.get('/api/maps/more')
             .then(
                 response => {
-                    sessionStorage.setItem('moreList',response.data.map_list)
+                    console.log(response.data)
+                    sessionStorage.setItem('moreList', JSON.stringify({"moreList":response.data.map_list !== null ? [] : response.data.map_list }))
                     setMapList(response.data.map_list)
                 }
             ).catch(error => {})
         }
         else{
-            setMapList(sessionMapList)
+            setMapList(JSON.stringify(sessionMapList).moreList )
         }
     },[]);
+
 
     useEffect(()=>{
         setModalDesc("")

@@ -75,6 +75,9 @@
     display: flex;
     position: relative;
     justify-content: center;
+    color: black;
+    text-align: center;
+    align-items: center;
 }
 .point-icon{
     position: absolute;
@@ -86,4 +89,10 @@
     background-position: center;
     background-repeat: no-repeat;
 
+}
+
+.product-content__price{
+    position: relative;
+    display: flex;
+    flex-direction: row;
 }

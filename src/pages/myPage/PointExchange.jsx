@@ -1,12 +1,15 @@
-import { useState } from "react"
+import { useState , useEffect } from "react"
 import Header from "../../components/Header"
 import "../../styles/myPage/pointExchange.css"
 import CommonButton from "../../components/CommonButton"
 import Bottom from "../../components/Bottom"
 import { useNavigate } from "react-router-dom"
+import { MainApi } from "../../app/MainApi"
+
 function PointExchange(props){
 
-    
+
+    const [currentPoint,setCurrentPoint] = useState(1)
     const navigate = useNavigate()
     const [productList,setProductList] = useState(
         [
@@ -31,8 +34,31 @@ function PointExchange(props){
                 "product_desc": "desc 1",
                 "product_price": 1000
             }
-        ])
+        ]);
+    
+    useEffect(()=>{
+        const memberInfo = sessionStorage.getItem("memberInfo")
+        if(memberInfo !== null){
+            const json = JSON.parse(memberInfo)
+            setCurrentPoint(json.memberPoint)
+        }
 
+        const productInfo = sessionStorage.getItem("productInfo")
+        if(productInfo !== null){
+            const json = JSON.parse(productInfo)
+            setCurrentPoint(json.memberPoint)
+        }
+        else{
+            MainApi.get("/api/products")
+            .then(response => {
+                sessionStorage.setItem("productInfo",JSON.stringify(response.data) )
+                console.log(response.data)
+                setProductList(response.data)
+            }).catch(error => {})
+        }
+
+    },[])
+    
     return(
         <div className="point-exchange">
             <Header>
@@ -41,8 +67,12 @@ function PointExchange(props){
                 </div>
                 <div className="point-header__current-point">
                     <div className="point-icon">
-                        {props.currentPoint}
+                        
                     </div>
+                    <div>
+                        {currentPoint}
+                    </div>
+                    
 
                 </div>
             </Header>
@@ -60,6 +90,9 @@ function PointExchange(props){
                                     {value.product_name}
                                 </div>
                                 <div className="product-content__price">
+                                    <div className="point-icon" style={{position:"unset"}}>
+                            
+                                    </div>
                                     {value.product_price}
                                 </div>
 

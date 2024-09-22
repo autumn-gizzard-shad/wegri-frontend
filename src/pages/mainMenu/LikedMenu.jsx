@@ -10,34 +10,34 @@ function LikedMenu(props){
             "map_id": "1",
             "map_title": "title1",
             "map_desc": "desc1 desc1 desc1 desc1 desc1 desc1 desc1 desc1 desc1 desc1 desc1 desc1 desc1 ",
-            "map_emoji": "string",
+            "map_emoji": "😊",
             "pin_count": 123
         },
         {
             "map_id": "3",
             "map_title": "title2",
             "map_desc": "desc2 desc2 desc2 desc2 desc2 desc2 desc2 desc2 desc2 desc2 desc2 desc2 ",
-            "map_emoji": "string",
+            "map_emoji": "😊",
             "pin_count": 33
         },{
             "map_id": "4",
             "map_title": "title3",
             "map_desc": "desc3 desc3 desc3 desc3 desc3 desc3 desc3 desc3 desc3 desc3 desc3 desc3 desc3 desc3 ",
-            "map_emoji": "string",
+            "map_emoji": "😊",
             "pin_count": 20
         },
         {
             "map_id": "4",
             "map_title": "title4",
             "map_desc": "desc3 desc3 desc3 desc3 desc3 desc3 desc3 desc3 desc3 desc3 desc3 desc3 desc3 desc3 ",
-            "map_emoji": "string",
+            "map_emoji": "😊",
             "pin_count": 10
         },
         {
             "map_id": "22",
             "map_title": "title5",
             "map_desc": "desc3 desc3 desc3 desc3 desc3 desc3 desc3 desc3 desc3 desc3 desc3 desc3 desc3 desc3 ",
-            "map_emoji": "string",
+            "map_emoji": "😊",
             "pin_count": 9
         }
     ])
@@ -48,13 +48,13 @@ function LikedMenu(props){
             MainApi.get('/api/members/favorites')
             .then(
                 response => {
-                    sessionStorage.setItem('LikedList',response.data.map_list)
+                    sessionStorage.setItem('LikedList', JSON.stringify({"LikedList":response.data.map_list}))
                     setMapList(response.data.map_list)
                 }
             ).catch(error => {})
         }
         else{
-            setMapList(sessionMapList)
+            setMapList(JSON.stringify(sessionMapList).LikedList )
         }
     },[]);
 

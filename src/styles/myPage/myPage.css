@@ -24,7 +24,7 @@
     width: 191px;
     height: 191px;
     border-radius: 50%;
-    background-image: url("../../assets/camera.png");
+    /* background-image: url("../../assets/camera.png"); */
     background-repeat: no-repeat;
     background-color: #F5F5F5;
     background-position: center;

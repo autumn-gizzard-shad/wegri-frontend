@@ -45,13 +45,13 @@ function MainMenu() {
             MainApi.get('/api/maps')
             .then(
                 response => {
-                    sessionStorage.setItem('mapList',response.data.map_list)
+                    sessionStorage.setItem('mapList',JSON.stringify({"mapList":response.data.map_list}))
                     setMapList(response.data.map_list)
                 }
             ).catch(error => {})
         }
         else{
-            setMapList(sessionMapList)
+            setMapList(JSON.parse(sessionMapList).mapList)
         }
     },[]);
     return(
