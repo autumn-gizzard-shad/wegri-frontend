@@ -99,7 +99,7 @@ function MoreMenu(props){
         
         <div className="more-index">
             <Header>
-                <div>{address}</div>
+                <div>{sessionStorage.getItem("addressString")}</div>
             </Header>
             <div className="more-menu__top">
                 <div className="more-menu__back-button" onClick={(event)=>{navigate(-1)}}>
@@ -112,10 +112,12 @@ function MoreMenu(props){
 
             </div>
             {
-                mapList.map((value,index) => (
+            mapList
+               ? mapList.map((value,index) => (
                     
                     <MapButton content={value} size="small"></MapButton>
                 ))
+                :<div></div>
             }
             
             <PlusButton type={plusBtn} onClick={(event)=>openModal()}></PlusButton>

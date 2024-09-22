@@ -43,19 +43,23 @@ function LikedMenu(props){
     ])
 
     useEffect(()=>{
-        const sessionMapList = sessionStorage.getItem('LikedList')
-        if(sessionMapList === null){
-            MainApi.get('/api/members/favorites')
-            .then(
-                response => {
-                    sessionStorage.setItem('LikedList', JSON.stringify({"LikedList":response.data.map_list}))
-                    setMapList(response.data.map_list)
-                }
-            ).catch(error => {})
-        }
-        else{
-            setMapList(JSON.stringify(sessionMapList).LikedList )
-        }
+        // const sessionMapList = sessionStorage.getItem('LikedList')
+        // console.log(sessionMapList);
+        // if(sessionMapList.empty){
+        // console.log(sessionMapList);
+        MainApi.get('/api/members/favorites')
+        .then(
+            response => {
+              console.log(response)
+
+              sessionStorage.setItem('LikedList', JSON.stringify({"LikedList":response.data}))
+              setMapList(response.data)
+            }
+        ).catch(error => {})
+        // }
+        // else{
+        //   setMapList(JSON.stringify(sessionMapList).LikedList )
+        // }
     },[]);
 
 
@@ -64,12 +68,14 @@ function LikedMenu(props){
     return(
         <div className="more-index">
             <Header>
-                <div>{address}</div>
+                <div>{sessionStorage.getItem("addressString")}</div>
             </Header>
             {
-                mapList.map((value,index) => (
+            mapList
+            ? mapList.map((value,index) => (
                     <MapButton content={value} size={index <3 ? "big":"small"}></MapButton>
                 ))
+            : <div></div>
             }
             <Bottom current="liked"></Bottom>
         </div>

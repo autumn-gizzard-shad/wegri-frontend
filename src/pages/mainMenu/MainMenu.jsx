@@ -7,7 +7,11 @@ import Bottom from "../../components/Bottom";
 import { useNavigate } from "react-router-dom";
 import { MainApi } from "../../app/MainApi";
 
-function MainMenu() {    
+const { kakao } = window;
+
+function MainMenu() {
+    const [ userLocStr , setUserLocStr] = useState(null);
+
     const [mapList,setMapList] = useState([
         {
             "map_id": "1",
@@ -36,28 +40,57 @@ function MainMenu() {
         navigate("/more",{state:{"address":address}})
     }
 
+    useEffect(()=>{
+      async function getUserLoc() {
+        var lat = 37.402707;
+        var lng = 126.922044;
 
+        if(navigator.geolocation){
+          const pos = await new Promise((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject);
+          });
+          lat = pos.coords.latitude;
+          lng = pos.coords.longitude;
+        } 
+
+        const geocoder = new kakao.maps.services.Geocoder();
+        geocoder.coord2Address(lng, lat,(result,status)=> {
+          if (status === kakao.maps.services.Status.OK) {
+            const addressString = result[0].address.address_name;
+            setUserLocStr(addressString);
+            sessionStorage.setItem("addressString", addressString);
+          }
+
+        });
+      }
+
+      getUserLoc();
+    },[]);
 
     useEffect(()=>{
+      if(userLocStr){
         const sessionMapList = sessionStorage.getItem('mapList')
 
         if(sessionMapList === null){
-            MainApi.get('/api/maps')
-            .then(
-                response => {
-                    sessionStorage.setItem('mapList',JSON.stringify({"mapList":response.data.map_list}))
-                    setMapList(response.data.map_list)
-                }
-            ).catch(error => {})
+          MainApi.get('/api/maps')
+          .then(
+              response => {
+                  sessionStorage.setItem('mapList',JSON.stringify({"mapList":response.data.map_list}))
+                  setMapList(response.data.map_list)
+              }
+          ).catch(error => {})
         }
         else{
-            setMapList(JSON.parse(sessionMapList).mapList)
+          setMapList(JSON.parse(sessionMapList).mapList)
         }
-    },[]);
+      }
+    },[userLocStr]);
+
+
     return(
         <div className="main-index">
             <Header>
-                <div>{address}</div>
+                <div>{sessionStorage.getItem("addressString")}</div>
             </Header>
             {
                 mapList.map((value,index) => (

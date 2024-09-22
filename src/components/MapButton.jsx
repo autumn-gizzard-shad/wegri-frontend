@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 
 function MapButton(props){
     const navigate = useNavigate();
-
     return(
         <div 
         className="map-btn button" 
