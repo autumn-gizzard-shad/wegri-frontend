@@ -1,3 +1,4 @@
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import logo from '../assets/logo.svg';
 import '../styles/App.css';
 import MainMenu from './mainMenu/MainMenu';
@@ -7,6 +8,9 @@ import MoreView from './mainMenu/MoreMenu';
 import LikedMenu from './mainMenu/LikedMenu';
 import Mypage from './myPage/Mypage';
 import PointExchange from './myPage/PointExchange';
+import KaKao from './map/kakaomap';
+import TakePhotoPage from './map/takePhotoPage';
+
 
 function App() {
   return (
@@ -20,16 +24,14 @@ function App() {
             <Route path='/liked' element={<LikedMenu></LikedMenu>}/>
             <Route path='/mypage' element={<Mypage></Mypage>}/>
             <Route path='/point' element={<PointExchange></PointExchange>}/>
-            
+            <Route path="/map" element={<KaKao map_id={2}></KaKao>}/>
+            <Route path="/map/photo" element={<TakePhotoPage></TakePhotoPage>}/>
+
 
           </Routes>
 
 
     </BrowserRouter>
-      
-  
-    
-    
     
   );
 }
