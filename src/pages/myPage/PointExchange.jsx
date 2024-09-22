@@ -38,6 +38,7 @@ function PointExchange(props){
     
     useEffect(()=>{
         const memberInfo = sessionStorage.getItem("memberInfo")
+        console.log(memberInfo);
         if(memberInfo !== null){
             const json = JSON.parse(memberInfo)
             setCurrentPoint(json.memberPoint)
@@ -46,7 +47,7 @@ function PointExchange(props){
         const productInfo = sessionStorage.getItem("productInfo")
         if(productInfo !== null){
             const json = JSON.parse(productInfo)
-            setCurrentPoint(json.memberPoint)
+            setProductList(json)
         }
         else{
             MainApi.get("/api/products")
@@ -58,6 +59,24 @@ function PointExchange(props){
         }
 
     },[])
+
+    async function exchangePoint(product_id, product_price) {
+      if(currentPoint < product_price){
+        // 돈없음
+        return
+      } else {
+        MainApi.post("/api/products",
+          {
+            "product_id" : product_id
+          }
+        )
+        .then(response => {
+          setCurrentPoint(currentPoint-product_price);
+        }).catch(error => {})  
+      }
+
+
+    }
     
     return(
         <div className="point-exchange">
@@ -109,7 +128,10 @@ function PointExchange(props){
                                     
                                     
                                     <CommonButton width="82px" height="14px" backgroundColor="#6DC553">
-                                        <div className="product-content__button"  >
+                                        <div 
+                                        className="product-content__button"  
+                                        onClick={exchangePoint(value.product_id,value.product_price)}
+                                        >
                                             교환하기
                                         </div>
                                     </CommonButton>
