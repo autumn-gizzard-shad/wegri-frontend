@@ -183,7 +183,7 @@ function KaKao() {
 
     getCoords();
 
-    return stopGeetingCurrentLoc();
+    return ()=>{stopGeetingCurrentLoc()};
   },[]);
 
   useEffect(()=>{
